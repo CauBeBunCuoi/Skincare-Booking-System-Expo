@@ -3,6 +3,7 @@ import { View, StyleSheet } from 'react-native';
 
 import { CommonActions } from '@react-navigation/native';
 import { Text, BottomNavigation, TouchableRipple } from 'react-native-paper';
+import { styles } from './styles';
 
 
 export function BottomNavBar({ hiddenBottomNavBarScreens, navigation, state, descriptors, insets }) {
@@ -70,9 +71,9 @@ export function BottomNavBar({ hiddenBottomNavBarScreens, navigation, state, des
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        height: 70,
-    },
-});
+// const styles = StyleSheet.create({
+//     container: {
+//         height: 70,
+//     },
+// });
 
