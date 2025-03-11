@@ -1,16 +1,24 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+  useRoute,
+} from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { Stack, useNavigation } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
+import "react-native-reanimated";
+import "react-native-gesture-handler";
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { PaperProvider } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { AppBottomNavigation } from './navigation/App.navigation';
-import { StyleSheet } from 'react-native';
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { PaperProvider } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { AppBottomNavigation } from "./navigation/App.navigation";
+import { StyleSheet } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import HomeIcon from "@/components/homeIcon/homeIcon";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -18,7 +26,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
   useEffect(() => {
@@ -39,21 +47,31 @@ export default function RootLayout() {
     //   </Stack>
     //   <StatusBar style="auto" />
     // </ThemeProvider>
-    <PaperProvider>
+
+    // <PaperProvider>
+    //   <SafeAreaView style={layoutStyles.AndroidSafeArea}>
+    //     <AppBottomNavigation />
+    //   </SafeAreaView>
+    // </PaperProvider>
+
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      {/* Bọc vào đây */}
+      <PaperProvider>
         <SafeAreaView style={layoutStyles.AndroidSafeArea}>
           <AppBottomNavigation />
         </SafeAreaView>
-    </PaperProvider>
+      </PaperProvider>
+    </GestureHandlerRootView>
   );
 }
 
 const layoutStyles = StyleSheet.create({
   AndroidSafeArea: {
-      flex: 1,
-      backgroundColor: "white",
-      // paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
+    flex: 1,
+    backgroundColor: "white",
+    // paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
   },
   MainScreen: {
-      marginBottom: 70,
-  }
+    marginBottom: 70,
+  },
 });
