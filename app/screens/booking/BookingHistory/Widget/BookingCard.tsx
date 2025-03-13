@@ -1,3 +1,4 @@
+import { formatLocalHostImageUrl } from "@/app/tool/ImageUrlHelper";
 import { useNavigation } from "expo-router";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Button } from "react-native";
@@ -48,7 +49,9 @@ const BookingCard = ({ item }) => {
       style={styles.container}
     >
       <Image
-        source={getUrl(item.service.imageUrl)}
+        source={{
+          uri: formatLocalHostImageUrl(item.service.imageUrl),
+        }}
         style={{
           width: 150,
           height: 150,
@@ -57,7 +60,7 @@ const BookingCard = ({ item }) => {
         }}
       />
       <View style={styles.bookingInformationsContainer}>
-        <Text style={styles.idText}>ID: {item.booking._id}</Text>
+        <Text style={styles.idText}>{item.service.name}</Text>
         <Text style={styles.normalText}>
           Date: {formatTime(item.booking.appointmentTime)} -{" "}
           {formatDate(item.booking.bookingDate)}
@@ -68,7 +71,7 @@ const BookingCard = ({ item }) => {
         <Text style={styles.normalText}>
           Total Fee: {formatMoney(item.booking.totalFee)}
         </Text>
-        {item.bookingStatus._id > 4 && item.bookingStatus._id < 7 ? (
+        {item.therapist ? (
           <Text style={styles.normalText}>
             Therapist: {item.therapist.fullName}
           </Text>

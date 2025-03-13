@@ -4,6 +4,8 @@ import { useIsFocused } from "@react-navigation/native";
 import { styles } from "./styles";
 import Question from "./Widget/Question";
 import { useNavigation } from "expo-router";
+import { publicApi } from "@/app/api/instance/axiosInstance";
+import { callApi } from "@/app/api/main/api_call/api";
 
 const quizzes = [
   {
@@ -122,7 +124,17 @@ const QuizScreen = () => {
   }, [isFocused]);
 
   const setAttributes = async () => {
-    setQuizData(quizzes);
+
+    const questions = await callApi({
+      instance: publicApi,
+      method: "get",
+      url: "/quizzes",
+    });
+    if (questions.success) {
+      setQuizData(questions.data.quizzes);
+    }
+
+    // setQuizData(quizzes);
     setLoading(false);
   };
 
@@ -145,7 +157,7 @@ const QuizScreen = () => {
 
   const handleSubmit = () => {
     navigation.navigate("QuizResult", { answers });
-    console.log("answers", answers);
+    console.log("\n\n\n\nanswers", answers);
   };
 
   return (
@@ -163,13 +175,14 @@ const QuizScreen = () => {
       ))}
 
       <TouchableOpacity
+        disabled={answers.length === 0}
         onPress={handleSubmit}
         style={{
-          backgroundColor: "#3498db",
+          backgroundColor: answers.length === 0 ? "grey" : "#3498db",
           padding: 12,
           borderRadius: 5,
           alignItems: "center",
-          marginTop: 20,
+          marginBlock: 20,
         }}
       >
         <Text style={{ color: "#fff", fontSize: 18, fontWeight: "bold" }}>

@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import Modal from "react-native-modal";
 import { AntDesign } from "@expo/vector-icons";
+import { formatLocalHostImageUrl } from "@/app/tool/ImageUrlHelper";
 
 interface Therapist {
   _id: string;
@@ -61,11 +62,18 @@ const ResultPopup: React.FC<ResultPopupProps> = ({
         {/* Thông tin Therapist */}
         <View style={styles.therapistInfo}>
           <Image
-            source={require("@/assets/images/therapist/1.jpg")}
+            source={{
+              uri : therapist ?  formatLocalHostImageUrl(therapist.imageUrl) : "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png",
+            }}
             style={styles.avatar}
           />
           <View>
-            <Text style={styles.name}>{therapist.fullName}</Text>
+            {therapist ? (
+              <Text style={styles.name}>{therapist.fullName}</Text>
+            ) : (
+              <Text style={styles.name}>Not assigned</Text>
+            )}
+            {/* <Text style={styles.name}>{therapist.fullName}</Text> */}
             <Text style={styles.bookingId}>Booking: #{bookingId}</Text>
             <Text style={styles.serviceTitle}>{serviceName}</Text>
           </View>

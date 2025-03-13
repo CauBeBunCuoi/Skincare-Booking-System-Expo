@@ -1,3 +1,4 @@
+import { formatLocalHostImageUrl } from "@/app/tool/ImageUrlHelper";
 import { useNavigation } from "expo-router";
 import {
   FlatList,
@@ -15,9 +16,11 @@ const ServiceCardSimple = ({ service }) => {
     navigation.navigate("ServiceDetail", { serviceId: service._id });
   };
 
+  
+
   return (
     <View style={styles.card}>
-      <Image source={{ uri: service.imageUrl }} style={styles.image} />
+      <Image source={{ uri: formatLocalHostImageUrl(service.imageUrl) }} style={styles.image} />
       <View style={styles.cardContent}>
         <Text style={styles.serviceName}>{service.name}</Text>
         <Text style={styles.price}>{service.fee.toLocaleString()} VND</Text>

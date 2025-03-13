@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Image, StyleSheet, FlatList, Button } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
+import { formatLocalHostImageUrl } from "@/app/tool/ImageUrlHelper";
 
 const TherapistInformation = ({ data, isSelection }) => {
   const { therapist, analyzing, backgrounds } = data;
 
   // Tách therapistDegree từ backgrounds
   const extractTherapistInfo = (data) => {
-    const therapistDegreeObj = data.backgrounds.find((item) =>
+    const therapistDegreeObj = backgrounds.find((item) =>
       item.description.startsWith("#")
     );
-    const therapistQuoteObj = data.backgrounds.find((item) =>
+    const therapistQuoteObj = backgrounds.find((item) =>
       item.description.includes("@")
     );
 
@@ -28,14 +29,14 @@ const TherapistInformation = ({ data, isSelection }) => {
   // Tách quote từ backgrounds
 
   const handleBooking = () => {
-    console.log("Book therapist: ", therapist.fullName);
+    // console.log("Book therapist: ", therapist.fullName);
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.card}>
         <Image
-          source={require("@/assets/images/test/therapist/therapist1.jpg")}
+          source={{uri: formatLocalHostImageUrl(therapist.imageUrl)}}
           style={styles.image}
         />
         <View style={styles.infoContainer}>
@@ -49,7 +50,7 @@ const TherapistInformation = ({ data, isSelection }) => {
           <Text style={styles.description}>{therapistQuote}</Text>
         </View>
       </View>
-      <View style={styles.statsContainer}>
+      {/* <View style={styles.statsContainer}>
         <View>
           <Text style={styles.stats}>{analyzing.totalCustomer}</Text>
           <Text style={styles.label}>Customers</Text>
@@ -66,7 +67,7 @@ const TherapistInformation = ({ data, isSelection }) => {
             }}
           />
         )}
-      </View>
+      </View> */}
     </View>
   );
 };

@@ -231,11 +231,12 @@ import Carousel, {
   Pagination,
 } from "react-native-reanimated-carousel";
 import { useNavigation } from "expo-router";
+import { formatLocalHostImageUrl } from "@/app/tool/ImageUrlHelper";
 
 const width = Dimensions.get("window").width;
 
 const TherapistCarousel = ({ data }) => {
-  // STATE
+  // STATES
   const [dataTherapist, setDataTherapist] = useState([]);
   const [groupedData, setGroupedData] = useState([]);
 
@@ -271,8 +272,8 @@ const TherapistCarousel = ({ data }) => {
 
   const handleViewTherapistDetail = (item) => {
     navigation.navigate("TherapistDetail", {
-      therapistId: item._id,
-      therapistName: item.fullName,
+      therapistId: item._id as any,
+      therapistName: item?.fullName as any,
     });
   };
 
@@ -305,7 +306,7 @@ const TherapistCarousel = ({ data }) => {
                     style={styles.card}
                   >
                     <Image
-                      source={{ uri: therapist.imageUrl }}
+                      source={{ uri: formatLocalHostImageUrl(therapist.imageUrl)}}
                       style={styles.image}
                     />
                     <View style={styles.content}>

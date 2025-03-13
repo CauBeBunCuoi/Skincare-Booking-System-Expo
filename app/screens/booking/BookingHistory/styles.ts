@@ -48,8 +48,8 @@ export const styles = StyleSheet.create({
     width: w,
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
+    // alignItems: "center",
+    // justifyContent: "center",
     paddingHorizontal: 20,
   },
 });

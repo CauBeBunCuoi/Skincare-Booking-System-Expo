@@ -1,10 +1,10 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-const TherapistDegree = ({ data }) => {
+const TherapistDegree = ({ data } :  {data : any[]}) => {
   return (
     <>
-      {data.map((item) => (
+      {data.length > 0 && data.map((item) => (
         <View key={item._id} style={styles.container}>
           <MaterialCommunityIcons
             name="certificate-outline"

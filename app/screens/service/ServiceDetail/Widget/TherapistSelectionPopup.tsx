@@ -13,6 +13,8 @@ import TherapistInformation from "./TherapistInformation";
 import TherapistDegree from "./TherapistDegree";
 import TherapistExperiences from "./TherapistExperiences";
 import CustomerRate from "./CustomerRate";
+import { callApi } from "@/app/api/main/api_call/api";
+import { publicApi } from "@/app/api/instance/axiosInstance";
 
 const data = {
   therapist: {
@@ -83,30 +85,50 @@ const data = {
   ],
 };
 
-const TherapistSelectionPopup = ({ therapist, serviceId }) => {
+const TherapistSelectionPopup = ({ therapistId, serviceId }) => {
   // STATES
   const [loading, setLoading] = useState(true);
+  const [therapist, setTherapist] = useState(null);
   const [service, setService] = useState(null);
+  const [feedbackRates, setFeedbackRates] = useState([]);
+  const [backgrounds, setBackgrounds] = useState([]);
+  const [analyzing, setAnalyzing] = useState(null);
+
   // HOOKS
   const isFocused = useIsFocused();
 
   useEffect(() => {
     setLoading(true);
-    setService(data.services[0]);
-    // setAttributes();
-  }, [isFocused]);
 
-  const extractTherapistInfo = (data) => {
-    const otherBackgrounds = data.backgrounds.filter(
+    setAttributes();
+  }, [isFocused]);
+  
+  const setAttributes = async () => {
+    const therapistSelection = await callApi({
+      instance: publicApi,
+      method: "get",
+      url: `/accounts/${therapistId}/therapist-selection`,
+    });
+    if (therapistSelection.success) {
+      setTherapist(therapistSelection.data.therapist);
+      setFeedbackRates(therapistSelection.data.feedbackRates);
+      setBackgrounds(therapistSelection.data.backgrounds);
+      setService(data.services[0]);
+      setAnalyzing(therapistSelection.data.analyzing);
+    }
+
+    setLoading(false);
+  }
+
+  const extractTherapistInfo = (backgrounds) => {
+    const otherBackgrounds = backgrounds.filter(
       (item) =>
         !item.description.startsWith("#") && !item.description.includes("@")
     );
-    return {
-      otherBackgrounds,
-    };
+    return otherBackgrounds;
   };
 
-  const { otherBackgrounds } = extractTherapistInfo(data);
+  // const { otherBackgrounds } = extractTherapistInfo(data);
 
   return (
     <ScrollView
@@ -114,14 +136,19 @@ const TherapistSelectionPopup = ({ therapist, serviceId }) => {
       contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}
       keyboardShouldPersistTaps="handled"
     >
-      <View style={styles.container}>
-        <TherapistInformation data={data} isSelection={true} />
-        <TherapistDegree data={otherBackgrounds} />
+      {loading ? (
+        <Text>Loading...</Text>
+      ) : (
+        <View style={styles.container}>
+        <TherapistInformation data={{
+          therapist, analyzing, backgrounds
+        }} isSelection={true} />
+        <TherapistDegree data={extractTherapistInfo(backgrounds)} />
         <TherapistExperiences services={data.services} />
 
         <DividerUI />
 
-        <View style={styles.feedbackDescriptionContainer}>
+        {/* <View style={styles.feedbackDescriptionContainer}>
           <Text style={styles.feedbackDescriptionText}>
             Rating From User About Doing{" "}
             <Text style={{ color: "red" }}>
@@ -130,14 +157,16 @@ const TherapistSelectionPopup = ({ therapist, serviceId }) => {
             With
             <Text style={{ color: "red" }}> Dr.{data.therapist.fullName}</Text>
           </Text>
-        </View>
+        </View> */}
 
         <View style={{ width: "100%", alignItems: "center" }}>
-          {data.feedbackRates.map((feedbackRate) => (
+          {feedbackRates.map((feedbackRate) => (
             <CustomerRate key={feedbackRate._id} rate={feedbackRate} />
           ))}
         </View>
       </View>
+      )}
+      
     </ScrollView>
   );
 };

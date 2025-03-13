@@ -6,6 +6,8 @@ import ServiceListCard from "./Widget/ServiceListCard";
 import { ScrollView } from "react-native-reanimated/lib/typescript/Animated";
 import { useNavigation } from "expo-router";
 import { MultiSelect, Dropdown } from "react-native-element-dropdown";
+import { callApi } from "@/app/api/main/api_call/api";
+import { publicApi } from "@/app/api/instance/axiosInstance";
 
 const w = Dimensions.get("window").width;
 
@@ -246,59 +248,133 @@ const sortTypes = [
 const ServiceListScreen = () => {
   // STATES
   const [loading, setLoading] = useState(true);
+  const [serviceType, setServiceType] = useState(null);
   const [skinTypes, setSkinTypes] = useState([]);
   const [skinStatuses, setSkinStatuses] = useState([]);
   const [services, setServices] = useState([]);
-  const [filterSkinStatus, setFilterSkinStatus] = useState([]);
-  const [filterSkinType, setFilterSkinType] = useState([]);
+
+  const [filterSkinStatuses, setFilterSkinStatuses] = useState<number[]>([]);
+  const [filterSkinTypes, setFilterSkinTypes] = useState<number[]>([]);
   const [sortType, setSortType] = useState("");
   // HOOKS
   const isFocused = useIsFocused();
   const route = useRoute();
   const navigation = useNavigation();
-  const { typeId, typeName } = route.params;
+  const { serviceTypeId, serviceTypeName } = route.params;
 
   useEffect(() => {
     const cleanUp = () => {
-      setFilterSkinStatus([]);
-      setFilterSkinType([]);
+      setFilterSkinStatuses([]);
+      setFilterSkinTypes([]);
     };
     cleanUp();
   }, []);
 
   useEffect(() => {
     setLoading(true);
-    setAttributes(typeId, filterSkinStatus, filterSkinType);
+    setAttributes();
   }, [isFocused]);
 
   // FUNCTIONS
-  const setAttributes = async (serviceTypeId, skinType, skinStatus) => {
-    setLoading(true);
-    setTimeout(() => {
-      // CALL API ĐỂ LẤY SERVICES DỰA VÀO serviceTypeId, skinTypes, skinStatuses
-      setServices(servicesData);
-      setSkinStatuses(skinStatusesData);
-      setSkinTypes(skinTypesData);
-      setLoading(false);
-    }, 50);
+  const setAttributes = async () => {
+    // setTimeout(() => {
+    //   // CALL API ĐỂ LẤY SERVICES DỰA VÀO serviceTypeId, skinTypes, skinStatuses
+    //   setServices(servicesData);
+    //   setSkinStatuses(skinStatusesData);
+    //   setSkinTypes(skinTypesData);
+    //   setLoading(false);
+    // }, 50);
+
+    const skinTypeDate = await callApi({
+      instance: publicApi,
+      method: "get",
+      url: "/services/skin-types",
+    });
+    if (skinTypeDate.success) {
+      setSkinTypes(skinTypeDate.data.skinTypes);
+    }
+
+    const skinStatusesData = await callApi({
+      instance: publicApi,
+      method: "get",
+      url: "/services/skin-statuses",
+    });
+    if (skinStatusesData.success) {
+      setSkinStatuses(skinStatusesData.data.skinStatuses);
+    }
+
+    const serviceType = await callApi({
+      instance: publicApi,
+      method: "get",
+      url: `/services/service-types`,
+    });
+    if (serviceType.success) {
+      console.log(serviceType.data.serviceTypes);
+      setServiceType(serviceType.data.serviceTypes.find((item) => item._id=== serviceTypeId));
+    } else {
+      console.log("\n\n\nError: ", serviceType.message.content);
+    }
+
+
+    await handleFilterServices(filterSkinTypes, filterSkinStatuses);
+
+
+    setLoading(false);
   };
+
+  const handleFilterServices = async (filter_SkinTypes , filter_SkinStatuses) => {
+
+    const filter ={
+      serviceTypeId: serviceTypeId,
+      skinTypes: filterSkinTypes,
+      skinStatuses: filterSkinStatuses,
+    }
+    console.log("\n\n\nfilter",filter);
+    const filteredServices = await callApi({
+      instance: publicApi,
+      method: "post",
+      url: `/services/filters`,
+      data: {
+        serviceTypeId: serviceTypeId,
+        skinTypes: filter_SkinTypes,
+        skinStatuses: filter_SkinStatuses,
+      },
+
+    })
+    
+    if (filteredServices.success) {
+      setServices(filteredServices.data.services);
+    } else {
+      console.log("\n\n\nError: ", filteredServices.message.content);
+    }
+
+  }
 
   const handleServiceDetail = (serviceId) => {
     navigation.navigate("ServiceDetail", { serviceId });
   };
 
   const handleSelectSkinStatus = async (items) => {
-    setFilterSkinStatus(items);
-    if (serviceType) {
-      await setAttributes(typeId, filterSkinType, items);
-    }
+
+    await setFilterSkinStatuses(items);
+    setLoading(true);
+
+    await handleFilterServices(filterSkinTypes, items);
+
+    setLoading(false);
   };
 
   const handleSelectSkinTypes = async (items) => {
-    setFilterSkinType(items);
-    if (serviceType) {
-      await setAttributes(typeId, items, filterSkinStatus);
+    for(const item of items){
+      console.log("\n\nitem",item);
     }
+    await setFilterSkinTypes(items);
+    setLoading(true);
+
+    await handleFilterServices(items, filterSkinStatuses);
+
+    setLoading(false);
+
   };
 
   const sortServices = (sortId) => {
@@ -329,13 +405,13 @@ const ServiceListScreen = () => {
         <Text>Loading...</Text>
       ) : (
         <>
-          <Text style={styles.serviceTypeName}>{typeName}</Text>
+          <Text style={styles.serviceTypeName}>{serviceTypeName}</Text>
           <View style={styles.filterContainer}>
             <MultiSelect
               data={skinStatuses}
               labelField="name"
               valueField="_id"
-              value={filterSkinStatus}
+              value={filterSkinStatuses}
               onChange={(items) => handleSelectSkinStatus(items)}
               placeholder="Chọn trạng thái da"
               search={false}
@@ -351,7 +427,7 @@ const ServiceListScreen = () => {
               data={skinTypes}
               labelField="name"
               valueField="_id"
-              value={filterSkinType}
+              value={filterSkinTypes}
               onChange={(items) => handleSelectSkinTypes(items)}
               placeholder="Chọn loại da"
               search={false}
@@ -385,7 +461,7 @@ const ServiceListScreen = () => {
           <View style={{ width: w / 1.1, flex: 1 }}>
             <FlatList
               data={services}
-              keyExtractor={(item) => item._id}
+              // keyExtractor={(item) => item._id}
               numColumns={2} // Hiển thị 2 cột
               columnWrapperStyle={{ justifyContent: "space-between" }} // Căn chỉnh item
               renderItem={({ item }) => (

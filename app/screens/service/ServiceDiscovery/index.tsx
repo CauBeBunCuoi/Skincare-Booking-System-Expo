@@ -5,6 +5,8 @@ import { styles } from "./styles";
 import ServiceTypeCard from "./Widget/ServiceTypeCard";
 import { ScrollView } from "react-native-gesture-handler";
 import ServiceTypeGroups from "./Widget/ServiceTypeGroups";
+import { publicApi } from "@/app/api/instance/axiosInstance";
+import { callApi } from "@/app/api/main/api_call/api";
 
 const data = [
   {
@@ -36,6 +38,7 @@ const data = [
     serviceCounts: 10,
   },
 ];
+
 const ServiceDiscoveryScreen = () => {
   // STATES
   const [loading, setLoading] = useState(true);
@@ -53,10 +56,21 @@ const ServiceDiscoveryScreen = () => {
   const setAttributes = async () => {
     // Call API to get service types
     // console.log("Chạy API để get service types");
-    setTimeout(() => {
-      setServiceTypes(data);
-      setLoading(false);
-    }, 3000);
+    // setTimeout(() => {
+    //   setServiceTypes(data);
+    //   setLoading(false);
+    // }, 3000);
+
+    const serviceTypes = await callApi({
+      instance: publicApi,
+      method: "get",
+      url: "/services/service-types",
+    });
+    if (serviceTypes.success) {
+      setServiceTypes(serviceTypes.data.serviceTypes);
+    }
+    setLoading(false);
+
   };
 
   return (

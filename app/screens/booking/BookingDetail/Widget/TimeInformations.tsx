@@ -48,10 +48,27 @@ const statusMap: {
   },
 };
 
+const dateFromIsoString = (isoString) => {
+  const date = new Date(isoString);
+  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+}
+
+const timeFromIsoString = (timeString) => {
+  const date = new Date(timeString);
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
+
+  hours = hours % 12 || 12; // Chuyển 0 giờ thành 12 giờ
+
+  return `${String(hours).padStart(2, "0")}:${minutes} ${ampm}`;
+};
+
 const TimeInformations = ({
-  bookingDate,
+  appointmentTime,
+  startTime,
+  endTime,
   bookingTime,
-  checkInTime,
   bookingStatusId,
 }) => {
   const status = statusMap[bookingStatusId] || {
@@ -66,16 +83,16 @@ const TimeInformations = ({
     >
       <View style={styles.container}>
         <View style={styles.infoBox}>
-          <Text style={styles.label}>Booking Date</Text>
-          <Text style={styles.value}>{bookingDate}</Text>
+          <Text style={styles.label}>Appointment Date</Text>
+          <Text style={styles.value}>{dateFromIsoString(appointmentTime)}</Text>
         </View>
         <View style={styles.infoBox}>
-          <Text style={styles.label}>Booking Time</Text>
-          <Text style={styles.value}>{bookingTime}</Text>
+          <Text style={styles.label}>Start Time</Text>
+          <Text style={styles.value}>{timeFromIsoString(startTime)}</Text>
         </View>
         <View style={styles.infoBox}>
-          <Text style={styles.label}>Check-in Time</Text>
-          <Text style={styles.value}>{checkInTime}</Text>
+          <Text style={styles.label}>End Time</Text>
+          <Text style={styles.value}>{timeFromIsoString(endTime)}</Text>
         </View>
         <View
           style={[

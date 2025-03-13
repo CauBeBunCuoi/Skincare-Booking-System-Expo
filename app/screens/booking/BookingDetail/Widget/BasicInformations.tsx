@@ -7,7 +7,13 @@ interface BasicInformationsProps {
   serviceName: string;
   totalFee: string;
   bookingStatusId: number;
-  therapistName: string;
+  bookingDate: string;
+  therapist: string;
+}
+
+const dateFromIsoString = (isoString: string) => {
+  const date = new Date(isoString);
+  return date.toLocaleDateString();
 }
 
 const BasicInformations: React.FC<BasicInformationsProps> = ({
@@ -15,7 +21,8 @@ const BasicInformations: React.FC<BasicInformationsProps> = ({
   serviceName,
   totalFee,
   bookingStatusId,
-  therapistName,
+  bookingDate,
+  therapist,
 }) => {
   return (
     <View style={styles.container}>
@@ -46,11 +53,19 @@ const BasicInformations: React.FC<BasicInformationsProps> = ({
       <View style={styles.row}>
         <FontAwesome5 name="user-md" size={16} color="black" />
         <Text style={styles.label}> Therapist</Text>
-        {bookingStatusId < 4 || bookingStatusId > 6 ? (
-          <Text style={styles.value}>Not assigned</Text>
+        {therapist ? (
+          <Text style={styles.value}>{therapist.fullName}</Text>
         ) : (
-          <Text style={styles.value}>{therapistName}</Text>
+          <Text style={styles.value}>Not assigned</Text>
+
         )}
+      </View>
+      <View style={styles.separator} />
+
+      <View style={styles.row}>
+        <FontAwesome5 name="dollar-sign" size={16} color="black" />
+        <Text style={styles.label}> Booking Date</Text>
+        <Text style={styles.value}>{dateFromIsoString(bookingDate)}</Text>
       </View>
     </View>
   );

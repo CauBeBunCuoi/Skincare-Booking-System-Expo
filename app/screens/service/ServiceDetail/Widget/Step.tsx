@@ -1,3 +1,4 @@
+import { formatLocalHostImageUrl } from "@/app/tool/ImageUrlHelper";
 import React from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 // import { Image } from "expo-image";
@@ -13,7 +14,7 @@ const StepWidget = ({ step }) => {
             <View style={styles.background}>
               <Image
                 source={{
-                  uri: step.imgUrl,
+                  uri: formatLocalHostImageUrl(step.imageUrl),
                 }}
                 style={styles.image}
                 onError={(e) => console.log("Lỗi ảnh:", e.nativeEvent)}
@@ -39,7 +40,7 @@ const StepWidget = ({ step }) => {
               </View>
               <Image
                 source={{
-                  uri: step.imgUrl,
+                  uri: formatLocalHostImageUrl(step.imageUrl),
                 }}
                 style={{ width: 100, height: 100 }}
                 onError={(e) => console.log("Lỗi ảnh:", e.nativeEvent)}

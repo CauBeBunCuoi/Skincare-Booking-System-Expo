@@ -12,12 +12,15 @@ import {
   FlatList,
   Button,
   Pressable,
+  Alert,
 } from "react-native";
 import DatePicker from "react-native-date-picker";
 import SelectDropdown from "react-native-select-dropdown";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { TherapistSelectionScreen } from "@/app/screens/account";
 import TherapistSelectionPopup from "./TherapistSelectionPopup";
+import { callApi } from "@/app/api/main/api_call/api";
+import { loginRequiredApi, publicApi } from "@/app/api/instance/axiosInstance";
 
 const scheduleList = [
   {
@@ -109,11 +112,13 @@ const randomTherapist = {
 };
 
 // Component hiển thị mỗi giờ
-const HourCard = ({ time }: { time: string }) => (
-  <View style={styles.hourCard}>
-    <Text style={styles.hourText}>{formatSingleTime(time)}</Text>
-  </View>
-);
+const HourCard = ({ selectedTime, time }: { time: string, selectedTime: string }) => {
+  return (
+    <View style={selectedTime == time ? styles.hourSelected : styles.hourCard}>
+      <Text style={styles.hourText}>{formatSingleTime(time)}</Text>
+    </View>
+  )
+};
 
 // Hàm format giờ
 function formatSingleTime(time) {
@@ -123,12 +128,15 @@ function formatSingleTime(time) {
 
 const SchedulePopup = ({
   visible,
-  serviceName,
-  serviceId,
+  service,
   selectedTherapist,
-  selectedDate,
   setSelectedTherapist,
+
+  selectedDate,
   setSelectedDate,
+
+
+
 
   onClose,
 }: any) => {
@@ -139,10 +147,10 @@ const SchedulePopup = ({
   const [therapists, setTherapists] = useState([]);
 
   const [appointmentTime, setAppointmentTime] = useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   // Loading state
-  const [isTherapistLoading, setIsTherapistLoading] = useState(true);
-  const [isScheduleLoading, setIsScheduleLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Control Visible state
   const [isConfirmButtonVisible, setIsConfirmButtonVisible] = useState(false);
@@ -158,10 +166,7 @@ const SchedulePopup = ({
   useEffect(() => {
     return () => {
       const cleanup = async () => {
-        // await AsyncStorage.removeItem("selectedTherapist");
         setTherapists([]);
-        // setSelectedTherapist(null);
-        // setSelectedDate(null);
       };
 
       cleanup();
@@ -171,18 +176,10 @@ const SchedulePopup = ({
   useEffect(() => {
     const loadSelectedTherapist = async () => {
       try {
-        setIsTherapistLoading(true);
-        await setAttributes(serviceId, "");
-
-        // Gọi API để lấy schedule với therapist random
-        // const storedTherapist = await AsyncStorage.getItem("selectedTherapist");
-        // if (storedTherapist) {
-        //   setSelectedTherapist(JSON.parse(storedTherapist)); // Chuyển JSON về object
-        // } else {
-        //   setSelectedTherapist(randomTherapist);
-        // }
+        setIsLoading(true);
+        await setAttributes("randomTherapist");
       } catch (error) {
-        console.error("Error loading therapist from storage:", error);
+        console.error(error.message);
       }
     };
 
@@ -192,64 +189,51 @@ const SchedulePopup = ({
 
   // FUNCTIONS
 
-  const setAttributes = async (serviceId, therapistId) => {
+  const setAttributes = async (therapistId) => {
     // Gọi API để lấy danh sách therapist, schedules khi chưa có Therapist cụ thể
+    setIsLoading(true);
+    if (therapistId === "randomTherapist") {
+      const fetchSchedules = await callApi({
+        instance: publicApi,
+        method: "get",
+        url: `/bookings/services/${service._id}/schedules`,
+      });
+      if (fetchSchedules.success) {
+        const therapists = fetchSchedules.data.availableTherapists;
+        setTherapists([...therapists, randomTherapist]);
+        setSchedules(fetchSchedules.data.schedules);
+        setSelectedDate(fetchSchedules.data.schedules[0]);
+        setSelectedTherapist(randomTherapist);
+      }
 
-    // if(therapistId === "") {
-    //   setIsTherapistLoading(true);
-    //   setIsScheduleLoading(true);
-    //   const data = await axios.get("/bookings/services/{serviceId}/schedules");
-    //   if(data && data.length > 0) {
-    //     await fetchTherapist(data.availableTherapists)
-    //     await fetchSchedules(data.schedules)
-    //   }
-    // }
-    // if else(therapistId === "random") {
-    //     setIsScheduleLoading(true);
-    //     const data = await axios.get("/bookings/services/{serviceId}/schedules");
-    //     if(data && data.length > 0) {
-    //     await fetchSchedules(data.schedules)
-    //     }
-    // }
-    // else{
-    //   setIsScheduleLoading(true);
-    //   const data = await axios.get("/booking/services/{serviceId}/accounts/{accountId}/schedules");
-    //   if(data && data.length > 0) {
-    //     await fetchTherapist(data.schedules)
-    //   }
-    // }
+    } else {
+      const fetchSchedules = await callApi({
+        instance: publicApi,
+        method: "get",
+        url: `/bookings/services/${service._id}/accounts/${therapistId}/schedules`,
+      });
+      if (fetchSchedules.success) {
+        const therapists = fetchSchedules.data.availableTherapists;
+        setTherapists([...therapists, randomTherapist]);
+        setSchedules(fetchSchedules.data.schedules);
+        setSelectedDate(fetchSchedules.data.schedules[0]);
+      }
+    }
+    setIsLoading(false);
 
-    const fetchTherapist = async (data) => {
-      await setTherapists(data);
-      setTherapists((prevTherapists) => [...prevTherapists, randomTherapist]);
-      setIsTherapistLoading(false);
-    };
 
-    const fetchSchedules = async (data) => {
-      setSchedules(data);
-      setSelectedDate(data[0]);
-      setIsScheduleLoading(false);
-    };
 
-    await fetchTherapist(therapistList);
-    await fetchSchedules(scheduleList);
-    setSelectedTherapist(randomTherapist);
   };
 
   const handleSelectTherapist = async (selectedTherapist) => {
     try {
-      setIsScheduleLoading(true);
-      if (selectedTherapist._id === "randomTherapist") {
-        setIsAssigned(false);
-        await setAttributes(serviceId, "random");
-      } else {
-        setIsAssigned(true);
-        await setAttributes(serviceId, selectedTherapist._id);
-      }
+      await setAttributes(selectedTherapist._id);
+
       setSelectedTherapist(selectedTherapist);
+      setSelectedTime(null);
       setIsConfirmButtonVisible(false);
     } catch (error) {
-      console.error("Error saving therapist to storage:", error);
+      console.error(error.message);
     }
   };
 
@@ -261,18 +245,20 @@ const SchedulePopup = ({
   };
   const closeTherapistModal = () => {
     setTherapistModalVisible(false);
-    setIsScheduleLoading(false);
+    setIsLoading(false);
   };
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
+    setSelectedTime(null);
     setIsConfirmButtonVisible(false);
   };
   const handleBooking = (time) => {
+    setSelectedTime(time);
     const bookingDetails = {
-      serviceId: serviceId,
+      serviceId: service._id,
       appointmentTime: `${selectedDate.date}T${time}Z`,
-      isAssigned: isAssigned,
+      isAssigned: selectedTherapist._id === "randomTherapist" ? false : true,
       assignedTherapistId: selectedTherapist._id,
     };
     setAppointmentTime(formatSingleTime(time));
@@ -280,14 +266,33 @@ const SchedulePopup = ({
     setIsConfirmButtonVisible(true);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     // GỌI API Ở ĐÂY ĐỂ BOOKING
     console.log("Booking Successfully, Details: ", finalBookingDetails);
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "BOOKING", params: { screen: "BookingHistory" } }],
+    finalBookingDetails.isAssigned = selectedTherapist._id === "randomTherapist" ? false : true;
+    finalBookingDetails.assignedTherapistId = selectedTherapist._id === "randomTherapist" ? null : selectedTherapist._id;
+    const book = await callApi({
+      instance: loginRequiredApi,
+      method: "post",
+      url: "/bookings",
+      data: finalBookingDetails,
     });
-    onClose();
+    if (book.success) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "BOOKING", params: { screen: "BookingHistory" } }],
+      });
+      onClose();
+    }else{
+      Alert.alert("Booking Failed", "Please try again later", [
+        {
+          text: "OK",
+          onPress: () => console.log("OK Pressed"),
+        },
+      ]);
+    }
+
+    
   };
 
   return (
@@ -295,10 +300,10 @@ const SchedulePopup = ({
       <View style={styles.modalContainer}>
         <View style={styles.popup}>
           <Text style={styles.title}>Booking Services</Text>
-          <Text style={styles.serviceName}>{serviceName}</Text>
+          <Text style={styles.serviceName}>{service.name}</Text>
 
           {/* SELECT THERAPIST */}
-          {!isTherapistLoading ? (
+          {!isLoading ? (
             <>
               <View style={styles.therapistSelectContainer}>
                 <Text style={styles.therapistSelectTitle}>
@@ -312,6 +317,7 @@ const SchedulePopup = ({
                 <SelectDropdown
                   data={therapists}
                   onSelect={openTherapistModal}
+                  disabled={therapists.length > 1 ? false : true}
                   buttonStyle={styles.dropdownButtonStyle}
                   buttonTextStyle={styles.dropdownButtonTxtStyle}
                   defaultButtonText="Select a therapist"
@@ -358,8 +364,8 @@ const SchedulePopup = ({
                       keyboardShouldPersistTaps="handled"
                     >
                       <TherapistSelectionPopup
-                        therapist={selectedTherapist ? selectedTherapist : null}
-                        serviceId={serviceId}
+                        therapistId={selectedTherapist ? selectedTherapist._id : null}
+                        serviceId={service._id}
                       />
                     </ScrollView>
 
@@ -379,7 +385,7 @@ const SchedulePopup = ({
           )}
 
           {/* RENDER AVAILABLE DATE */}
-          {!isScheduleLoading ? (
+          {!isLoading ? (
             <View style={styles.timeSelectContainer}>
               <Text style={{ fontSize: 16, marginBottom: 10 }}>Chọn ngày:</Text>
 
@@ -387,25 +393,29 @@ const SchedulePopup = ({
               <SelectDropdown
                 data={schedules}
                 defaultValue={selectedDate}
+                disabled={schedules.length === 0}
                 onSelect={handleDateChange}
                 buttonStyle={styles.dropdownButtonStyle}
                 buttonTextStyle={styles.dropdownButtonTxtStyle}
                 defaultButtonText="Select a date"
                 rowStyle={styles.dropdownItemStyle}
                 rowTextStyle={styles.dropdownItemTxtStyle}
-                renderButton={(selectedItem, isOpened) => (
-                  <View style={styles.dropdownButtonStyle}>
-                    <Text style={styles.dropdownButtonTxtStyle}>
-                      {selectedItem
-                        ? selectedItem.date
-                        : selectedTherapist?.date || schedules[0].date}
-                    </Text>
-                    <Icon
-                      name={isOpened ? "chevron-up" : "chevron-down"}
-                      style={styles.dropdownButtonArrowStyle}
-                    />
-                  </View>
-                )}
+                renderButton={(selectedItem, isOpened) => {
+                  // console.log("Selected Date: ", selectedItem);
+                  return (
+                    <View style={styles.dropdownButtonStyle}>
+                      <Text style={styles.dropdownButtonTxtStyle}>
+                        {schedules.length > 0
+                          ? schedules[0].date
+                          : "No available date"}
+                      </Text>
+                      <Icon
+                        name={isOpened ? "chevron-up" : "chevron-down"}
+                        style={styles.dropdownButtonArrowStyle}
+                      />
+                    </View>
+                  )
+                }}
                 renderItem={(item, index, isSelected) => (
                   <View
                     style={[
@@ -419,7 +429,9 @@ const SchedulePopup = ({
                 buttonTextStyle={{ fontSize: 16 }}
               />
 
-              <Text style={{ fontSize: 16, marginTop: 20 }}>Giờ có sẵn:</Text>
+              <Text style={{ fontSize: 16, marginTop: 20 }}>Giờ có sẵn: {schedules.length > 0 ? "" : "Không có lịch hẹn nào"}
+
+              </Text>
 
               {/* Hiển thị danh sách giờ tương ứng */}
               {selectedDate && (
@@ -430,7 +442,7 @@ const SchedulePopup = ({
                     keyExtractor={(item) => item}
                     renderItem={({ item }) => (
                       <Pressable onPress={() => handleBooking(item)}>
-                        <HourCard time={item} />
+                        <HourCard selectedTime={selectedTime} time={item} />
                       </Pressable>
                     )}
                   />
@@ -447,7 +459,7 @@ const SchedulePopup = ({
                 <Text>This Is Your Booking Details</Text>
                 <Text>Service ID: {finalBookingDetails.serviceId}</Text>
                 <Text>Appointment Time: {appointmentTime}</Text>
-                <Text>Appointment Date: {selectedDate.date}</Text>
+                <Text>Appointment Date: {selectedDate?.date}</Text>
                 <Text>Therapist: {selectedTherapist.fullName}</Text>
               </View>
               <TouchableOpacity
@@ -539,6 +551,16 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginVertical: 10,
   },
+  hourSelected: {
+    flex: 1,
+    backgroundColor: "#3498db",
+    padding: 15,
+    borderRadius: 5,
+    margin: 5,
+    minWidth: 80,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   hourCard: {
     flex: 1,
     backgroundColor: "#f1c40f",
@@ -550,7 +572,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   hourText: {
-    color: "#fff",
+    color: "black",
     fontWeight: "bold",
   },
   noHours: {

@@ -5,6 +5,9 @@ import { styles } from "./styles";
 import { Pressable } from "react-native-gesture-handler";
 import { useNavigation } from "expo-router";
 import { IconButton, TextInput } from "react-native-paper";
+import { asyncStorage_getByKey } from "@/app/tool/AsyncStorage";
+import { callApi } from "@/app/api/main/api_call/api";
+import { loginRequiredApi } from "@/app/api/instance/axiosInstance";
 
 const data = {
   _id: "1",
@@ -38,8 +41,8 @@ const dataBooking = [
 const AccountProfileScreen = () => {
   // STATES
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(data);
-  const [bookings, setBookings] = useState(dataBooking);
+  const [user, setUser] = useState({});
+  const [bookings, setBookings] = useState([]);
 
   // HOOKS
   const isFocused = useIsFocused();
@@ -52,9 +55,19 @@ const AccountProfileScreen = () => {
   // FUNCTIONS
   const setAttributes = async () => {
     // Call API to get user profile
-    const response = { user: data, bookings: dataBooking };
-    setUser(response.user);
-    setBookings(response.bookings);
+    const auth = await asyncStorage_getByKey("auth");
+    
+    const user = auth.user;
+    setUser(user);
+
+    const bookingHistory = await callApi({
+      instance: loginRequiredApi,
+      method: "get",
+      url: `/bookings/accounts/${user._id}`,
+    })
+    if (bookingHistory.success) {
+      setBookings(bookingHistory.data.bookings);
+    }
     setLoading(false);
   };
 
@@ -141,7 +154,7 @@ const AccountProfileScreen = () => {
       <Pressable
         style={styles.signOutButton}
         onPress={() => {
-          console.log("user", user);
+          // console.log("user", user);
         }}
       >
         <Text style={styles.signOutButtonText}>Check User</Text>

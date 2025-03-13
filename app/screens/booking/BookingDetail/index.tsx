@@ -6,6 +6,8 @@ import { useNavigation } from "expo-router";
 import BasicInformations from "./Widget/BasicInformations";
 import TimeInformations from "./Widget/TimeInformations";
 import ResultPopup from "./Widget/ResultPopup";
+import { callApi } from "@/app/api/main/api_call/api";
+import { loginRequiredApi } from "@/app/api/instance/axiosInstance";
 
 const data = {
   booking: {
@@ -65,20 +67,7 @@ const data = {
   },
 };
 
-const formatDate = (dateString) => {
-  const [year, month, day] = dateString.split("-");
-  return `${day}/${month}/${year}`;
-};
-const formatTime = (timeString) => {
-  const date = new Date(timeString);
-  let hours = date.getHours();
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const ampm = hours >= 12 ? "PM" : "AM";
 
-  hours = hours % 12 || 12; // Chuyển 0 giờ thành 12 giờ
-
-  return `${String(hours).padStart(2, "0")}:${minutes} ${ampm}`;
-};
 
 const BookingDetailScreen = () => {
   // STATES
@@ -94,31 +83,43 @@ const BookingDetailScreen = () => {
   const { bookingId } = route.params;
 
   useEffect(() => {
-    navigation.setOptions({ title: `Booking Details ID: ${bookingId}` });
-    const fetchData = async () => {
-      setLoading(true);
-      await setAttributes(); // Giả sử đây là hàm gọi API, có thể dùng async/await
-      setLoading(false); // Sau khi dữ liệu cập nhật xong thì tắt loading
-    };
+    navigation.setOptions({ title: `Booking ID: ${bookingId}` });
+    setLoading(true);
 
-    fetchData();
+    setAttributes();
+
   }, [isFocused]);
 
   // FUNCTIONS
   const setAttributes = async () => {
     // Call API to get booking detail
     // console.log("Chạy API để get booking với id: ", bookingId);
-    setBooking(data);
+    const bookingDetailData = await callApi({
+      instance: loginRequiredApi,
+      method: "get",
+      url: `/bookings/${bookingId}`,
+    })
+    if (bookingDetailData.success) {
+      setBooking(bookingDetailData.data);
+    }
+    setLoading(false);
   };
 
   const handleDeclined = async () => {
     // Call API to decline booking
-    console.log("Chạy API để decline booking với id: ", bookingId);
+    const declinedData = await callApi({
+      instance: loginRequiredApi,
+      method: "post",
+      url: `/bookings/${bookingId}/cancel`,
+    })
+    if (declinedData.success) {
+      navigation.goBack();
+    }
   };
 
   const handleShowResult = async () => {
     // Call API to get result from therapist
-    console.log("Chạy API để get result from therapist với id: ", bookingId);
+    // console.log("Chạy API để get result from therapist với id: ", bookingId);
     setIsResultShow(true);
   };
 
@@ -138,18 +139,19 @@ const BookingDetailScreen = () => {
             serviceName={booking.service.name}
             totalFee={booking.booking.totalFee}
             bookingStatusId={booking.booking.bookStatusId}
-            therapistName={booking.therapist.fullName}
+            bookingDate= {booking.booking.bookingDate}
+            therapist={booking.therapist}
           />
 
           <TimeInformations
-            bookingDate={formatDate(booking.booking.bookingDate)}
-            bookingTime={formatTime(booking.booking.appointmentTime)}
-            checkInTime={formatTime(booking.booking.checkInTime)}
+            appointmentTime={booking.booking.appointmentTime}
+            startTime={booking.booking.startTime}
+            endTime={booking.booking.endTime}
             bookingStatusId={booking.booking.bookStatusId}
           />
 
           {booking.booking.bookStatusId === 5 ||
-          booking.booking.bookStatusId === 6 ? (
+            booking.booking.bookStatusId === 6 ? (
             <TouchableOpacity
               onPress={() => handleShowResult()}
               style={styles.resultButton}
@@ -166,15 +168,17 @@ const BookingDetailScreen = () => {
               <Text style={styles.declinedText}>Declined Booking</Text>
             </TouchableOpacity>
           )}
+          {booking.executionResult && (
+            <ResultPopup
+              bookingId={booking.booking._id}
+              serviceName={booking.service.name}
+              therapist={booking.therapist}
+              executionResult={booking.executionResult}
+              isVisible={isResultShow}
+              onClose={() => setIsResultShow(false)}
+            />
+          )}
 
-          <ResultPopup
-            bookingId={booking.booking._id}
-            serviceName={booking.service.name}
-            therapist={booking.therapist}
-            executionResult={booking.executionResult}
-            isVisible={isResultShow}
-            onClose={() => setIsResultShow(false)}
-          />
         </View>
       ) : (
         <Text>Loading...</Text>

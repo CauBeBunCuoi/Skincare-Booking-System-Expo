@@ -8,7 +8,7 @@ const ServiceSimpleCarousel = ({ services }) => {
         data={services}
         horizontal
         showsHorizontalScrollIndicator={false}
-        keyExtractor={(item) => item._id.toString()}
+        // keyExtractor={(item) => item._id.toString()}
         renderItem={({ item }) => <ServiceCardSimple service={item} />}
       />
     </View>

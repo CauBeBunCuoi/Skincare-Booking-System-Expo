@@ -6,7 +6,7 @@ interface ServiceType {
   _id: string;
   name: string;
   description: string;
-  serviceCounts: number;
+  servicesCount: number;
 }
 
 interface ServiceTypeCardProps {
@@ -32,15 +32,15 @@ const ServiceTypeCard: React.FC<ServiceTypeCardProps> = ({ serviceType }) => {
       </View>
       <View style={styles.content}>
         <View>
-          <Text style={styles.serviceCount}>{serviceType.serviceCounts}+</Text>
+          <Text style={styles.serviceCount}>{serviceType.servicesCount}+</Text>
           <Text style={{ fontSize: 8 }}>Services belong to this group</Text>
         </View>
         <TouchableOpacity
           style={styles.button}
           onPress={() =>
             navigation.navigate("ServiceList", {
-              typeId: serviceType._id,
-              typeName: serviceType.name,
+              serviceTypeId: serviceType._id,
+              serviceTypeName: serviceType.name,
             })
           }
         >

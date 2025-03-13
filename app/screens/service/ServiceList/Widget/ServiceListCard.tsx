@@ -1,3 +1,4 @@
+import { formatLocalHostImageUrl } from "@/app/tool/ImageUrlHelper";
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 
@@ -5,7 +6,7 @@ const ServiceListCard = ({ service, onPress }) => {
   return (
     <View style={styles.card}>
       {/* Hình ảnh dịch vụ */}
-      <Image style={styles.image} source={{ uri: service.imageUrl }} />
+      <Image style={styles.image} source={{ uri: formatLocalHostImageUrl(service.imageUrl) }} />
 
       {/* Nội dung dịch vụ */}
       <View style={styles.content}>

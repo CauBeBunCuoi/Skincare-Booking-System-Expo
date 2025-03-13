@@ -3,6 +3,10 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { styles } from "./styles";
 import BookingGroup from "./Widget/BookingGroup";
+import { callApi } from "@/app/api/main/api_call/api";
+import { publicApi } from "@/app/api/instance/axiosInstance";
+import { asyncStorage_getByKey } from "@/app/tool/AsyncStorage";
+import { ScrollView } from "react-native-gesture-handler";
 
 const data = [
   {
@@ -493,7 +497,16 @@ const BookingHistoryScreen = () => {
   const setAttributes = async () => {
     // CALL API to get booking history
     // console.log("Chạy API để get booking history");
-    setBookings(data);
+
+    const account = await asyncStorage_getByKey("auth");
+    const user = account.user;
+    // console.log("user", user);
+    const bookingHistory = await callApi({
+      instance: publicApi,
+      method: "get",
+      url: `/bookings/accounts/${user._id}`,
+    })
+    setBookings(bookingHistory.data.bookings);
   };
 
   // FUNCTIONS
@@ -509,7 +522,7 @@ const BookingHistoryScreen = () => {
     const statusGroups = {
       comingUp: [1, 2, 3, 4],
       completed: [5, 6],
-      cancelled: [7, 8],
+      cancelled: [7],
     };
 
     return bookingList.filter((item) =>
@@ -566,19 +579,19 @@ const BookingHistoryScreen = () => {
             </TouchableOpacity>
           </View>
           {showingGroup === "comingUpGroup" && (
-            <View style={styles.bookingList}>
+            <ScrollView style={styles.bookingList}>
               <BookingGroup group={comingUpGroup} />
-            </View>
+            </ScrollView>
           )}
           {showingGroup === "completedGroup" && (
-            <View style={styles.bookingList}>
+            <ScrollView style={styles.bookingList}>
               <BookingGroup group={completedGroup} />
-            </View>
+            </ScrollView>
           )}
           {showingGroup === "cancelledGroup" && (
-            <View style={styles.bookingList}>
+            <ScrollView style={styles.bookingList}>
               <BookingGroup group={cancelledGroup} />
-            </View>
+            </ScrollView>
           )}
         </>
       ) : (

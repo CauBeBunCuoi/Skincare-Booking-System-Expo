@@ -15,8 +15,8 @@ const ServiceGroup = ({ serviceType, data }) => {
   const navigation = useNavigation();
   const handleSeeMore = () => {
     navigation.navigate("ServiceList", {
-      typeId: serviceType._id,
-      typeName: serviceType.name,
+      serviceTypeId: serviceType._id,
+      serviceTypeName: serviceType.name,
     });
   };
   return (
@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#254039",
     borderRadius: 5,
+    width: "100%",
   },
   title: {
     color: "#fff",
