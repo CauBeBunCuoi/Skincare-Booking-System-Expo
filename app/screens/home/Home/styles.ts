@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   header: {},
   container: {
+    backgroundColor: "#C1D6B7",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
@@ -11,20 +12,19 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: "bold",
-    fontFamily: "Inter_700Bold",
+    fontFamily: "PostNoBillBold",
     color: "#8EB69B",
     paddingVertical: 20,
   },
   subTitle: {
-    fontSize: 12,
+    fontSize: 15,
     fontWeight: "normal",
-    fontFamily: "Inter_400Regular",
     color: "#0B2B26",
-    paddingHorizontal: 10,
+    paddingBottom: 5,
     textAlign: "center",
   },
   quizContainer: {
-    marginTop: 20,
+    marginTop: 10,
     backgroundColor: "#FFFFFF",
     borderRadius: 10,
     shadowColor: "#000", // Màu bóng (iOS)
@@ -41,17 +41,17 @@ export const styles = StyleSheet.create({
   quizTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    fontFamily: "Inter_700Bold",
-    color: "#8EB69B",
+    color: "#44270D",
   },
   quizSubTitle: {
     fontSize: 12,
+    paddingTop: 2,
     fontWeight: "normal",
-    fontFamily: "Inter_400Regular",
     color: "#0B2B26",
+    textAlign: "center",
   },
   quizButton: {
-    backgroundColor: "#8EB69B",
+    backgroundColor: "#254039",
     borderRadius: 10,
     padding: 10,
     marginTop: 20,
@@ -67,7 +67,6 @@ export const styles = StyleSheet.create({
   serviceGroupTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    fontFamily: "Inter_400Regular",
     color: "#0B2B26",
   },
   therapistTitle: {

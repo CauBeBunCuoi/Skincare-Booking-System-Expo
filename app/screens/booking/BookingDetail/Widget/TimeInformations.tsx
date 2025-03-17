@@ -51,15 +51,16 @@ const statusMap: {
 const dateFromIsoString = (isoString) => {
   const date = new Date(isoString);
   return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-}
+};
 
 const timeFromIsoString = (timeString) => {
   const date = new Date(timeString);
-  let hours = date.getHours();
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const ampm = hours >= 12 ? "PM" : "AM";
 
-  hours = hours % 12 || 12; // Chuyển 0 giờ thành 12 giờ
+  // Lấy giờ và phút theo UTC để tránh sai lệch múi giờ
+  let hours = date.getUTCHours();
+  let minutes = String(date.getUTCMinutes()).padStart(2, "0");
+
+  const ampm = hours >= 12 ? "PM" : "AM";
 
   return `${String(hours).padStart(2, "0")}:${minutes} ${ampm}`;
 };

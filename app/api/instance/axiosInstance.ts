@@ -6,18 +6,16 @@ import { asyncStorage_getByKey } from "@/app/tool/AsyncStorage";
 // import { JwtUtil } from "../../core/utils/jwt.util";
 // import { loginRequiredAlert } from "../../core/utils/alert.util";
 
-
-
 const publicApi = axios.create({
-  baseURL: apiBaseUrl + '/api',
+  baseURL: apiBaseUrl + "/api",
   timeout: 10000,
 });
 const loginRequiredApi = axios.create({
-  baseURL: apiBaseUrl + '/api',
+  baseURL: apiBaseUrl + "/api",
   timeout: 10000,
 });
 const adminApi = axios.create({
-  baseURL: apiBaseUrl + '/api',
+  baseURL: apiBaseUrl + "/api",
   timeout: 10000,
 });
 
@@ -49,11 +47,10 @@ loginRequiredApi.interceptors.request.use(
       // }
       config.headers.Authorization = `Bearer ${token}`;
     } else {
-
       //** CHO HIỆN THÔNG BÁO YÊU CẦU ĐĂNG NHẬP
       // await loginRequiredAlert();
 
-      return Promise.reject(new Error('No token found'));
+      return Promise.reject(new Error("No token found"));
     }
 
     return config;
@@ -95,7 +92,4 @@ export {
   publicApi,
   loginRequiredApi,
   // adminApi,
-}
-
-
-
+};

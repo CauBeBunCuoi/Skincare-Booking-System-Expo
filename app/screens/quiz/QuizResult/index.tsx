@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { BackHandler, Button, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  BackHandler,
+  Button,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useIsFocused, useRoute } from "@react-navigation/native";
 import { styles } from "./styles";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
@@ -7,6 +14,7 @@ import ServiceGroup from "./Widget/ServiceGroup";
 import { useFocusEffect, useNavigation } from "expo-router";
 import { callApi } from "@/app/api/main/api_call/api";
 import { publicApi } from "@/app/api/instance/axiosInstance";
+import { ImageBackground } from "react-native";
 
 const serviceTypes = [
   {
@@ -180,7 +188,6 @@ const QuizResultScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-
       const backHandler = BackHandler.addEventListener(
         "hardwareBackPress",
         (): boolean => {
@@ -197,7 +204,6 @@ const QuizResultScreen = () => {
     setLoading(true);
     setAttributes();
   }, [isFocused]);
-
 
   const setAttributes = async () => {
     //const result
@@ -217,8 +223,6 @@ const QuizResultScreen = () => {
     setLoading(false);
   };
 
-
-
   const handleRequiz = () => {
     //Clear all answers
     navigation.navigate("Quiz");
@@ -226,81 +230,101 @@ const QuizResultScreen = () => {
   const handleHome = () => {
     //Clear all answers
     navigation.navigate("Home");
-  }
+  };
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          {/* <Text style={styles.userAnswer}>
-            Because you have
-            <Text style={styles.skinType}> {skinType} </Text>
-            type and
-            <Text style={styles.skinStatus}> {skinStatus} </Text> skin status,
-            you also take care of your skin
-            <Text style={styles.skinTakeCare}> {skinTakeCare} </Text>
-          </Text> */}
-          <Text style={styles.suggestDescription}>
-            We suggest that you might be suitable with these Service Groups
-          </Text>
-        </View>
+    <View style={{ flex: 1 }}>
+      <ImageBackground
+        source={require("@/assets/images/backgrounds/quizResult/main.jpg")}
+        style={styles.background}
+      />
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Text
+              style={{
+                paddingVertical: 20,
+                fontSize: 40,
+                fontFamily: "PostNoBillBold",
+                color: "black",
+              }}
+            >
+              Quizz Result
+            </Text>
+          </View>
 
-        <View style={styles.serviceGroups}>
-          {serviceTypes.map((item, index) => (
-            <View style={styles.serviceGroup} key={item.serviceType._id}>
-              <ServiceGroup data={item} />
+          <View style={styles.serviceGroups}>
+            <View style={{ paddingHorizontal: 10, alignItems: "flex-start" }}>
+              <Text
+                style={{
+                  ...styles.suggestDescription,
+                  fontFamily: "PostNoBillBold",
+                }}
+              >
+                Take a look at our services base on your status
+              </Text>
             </View>
-          ))}
+            {serviceTypes.map((item, index) => (
+              <View style={styles.serviceGroup} key={item.serviceType._id}>
+                <ServiceGroup data={item} />
+              </View>
+            ))}
+          </View>
         </View>
-      </View>
 
-
-      <View style={{ display: "flex", flexDirection: "row", justifyContent: "center" }}>
-        <TouchableOpacity
-          onPress={handleRequiz}
+        <View
           style={{
-            backgroundColor: "#3498db",
-            padding: 12,
-            borderRadius: 5,
-            alignItems: "center",
-            marginInline: 10,
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            marginBottom: 20,
           }}
         >
-          <Text style={{ color: "#fff", fontSize: 18, fontWeight: "bold" }}>
-            Re-take Quiz
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleHome}
-          style={{
-            backgroundColor: "#3498db",
-            padding: 12,
-            borderRadius: 5,
-            alignItems: "center",
-            marginInline: 10,
-          }}
-        >
-          <Text style={{ color: "#fff", fontSize: 18, fontWeight: "bold" }}>
-            Go to Home
-          </Text>
-        </TouchableOpacity>
-      </View>
-      {/* <TouchableOpacity
-        onPress={handleRequiz}
-        style={{
-          backgroundColor: "#3498db",
-          padding: 12,
-          borderRadius: 5,
-          alignItems: "center",
-          marginBlock: 20,
-          marginInline: 20,
-        }}
-      >
-        <Text style={{ color: "#fff", fontSize: 18, fontWeight: "bold" }}>
-          Re-take Quiz
-        </Text>
-      </TouchableOpacity> */}
-    </ScrollView>
+          <TouchableOpacity
+            onPress={handleRequiz}
+            style={{
+              backgroundColor: "#6D3B13",
+              padding: 12,
+              borderRadius: 5,
+              alignItems: "center",
+              marginInline: 10,
+            }}
+          >
+            <Text
+              style={{
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+                fontFamily: "PostNoBillBold",
+              }}
+            >
+              Re-take Quiz
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleHome}
+            style={{
+              backgroundColor: "#6D3B13",
+              padding: 12,
+              borderRadius: 5,
+              alignItems: "center",
+              marginInline: 10,
+            }}
+          >
+            <Text
+              style={{
+                color: "#fff",
+                fontSize: 18,
+                fontWeight: "bold",
+                fontFamily: "PostNoBillBold",
+              }}
+            >
+              Go to Home
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 

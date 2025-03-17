@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { ImageBackground, Text, View } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { styles } from "./styles";
 import { Pressable } from "react-native-gesture-handler";
@@ -56,7 +56,7 @@ const AccountProfileScreen = () => {
   const setAttributes = async () => {
     // Call API to get user profile
     const auth = await asyncStorage_getByKey("auth");
-    
+
     const user = auth.user;
     setUser(user);
 
@@ -64,7 +64,7 @@ const AccountProfileScreen = () => {
       instance: loginRequiredApi,
       method: "get",
       url: `/bookings/accounts/${user._id}`,
-    })
+    });
     if (bookingHistory.success) {
       setBookings(bookingHistory.data.bookings);
     }
@@ -107,61 +107,75 @@ const AccountProfileScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.screenTitle}>User Profile</Text>
-      <View style={styles.profileContainer}>
-        <Text style={styles.label}>Name</Text>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={user.fullName}
-            onChangeText={(text) => handleInputChange("fullName", text)}
-            onBlur={() => console.log("Updated:", user.fullName)}
-            autoCorrect={false} // Không tự động sửa từ
-            autoCapitalize="words" // Viết hoa chữ cái đầu
-            keyboardType="default" // Cho phép nhập chữ và dấu
-          />
-          <IconButton icon="pencil" size={18} />
-        </View>
+    <View style={{ flex: 1 }}>
+      <ImageBackground
+        source={require("@/assets/images/backgrounds/profile/main.jpg")}
+        style={styles.background}
+      />
+      <View style={styles.container}>
+        <Text style={styles.screenTitle}>User Profile</Text>
+        <View style={styles.profileContainer}>
+          <View style={styles.informationRow}>
+            <Text style={styles.label}>Name</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                value={user.fullName}
+                onChangeText={(text) => handleInputChange("fullName", text)}
+                onBlur={() => console.log("Updated:", user.fullName)}
+                autoCorrect={false} // Không tự động sửa từ
+                autoCapitalize="words" // Viết hoa chữ cái đầu
+                keyboardType="default" // Cho phép nhập chữ và dấu
+              />
+              <IconButton icon="pencil" size={18} />
+            </View>
+          </View>
 
-        <Text style={styles.label}>Email</Text>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={user.email}
-            onChangeText={(text) => handleInputChange("email", text)}
-            onBlur={() => console.log("Updated:", user.email)}
-            keyboardType="email-address"
-          />
-          <IconButton icon="pencil" size={18} />
-        </View>
+          <View style={styles.informationRow}>
+            <Text style={styles.label}>Email</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                value={user.email}
+                onChangeText={(text) => handleInputChange("email", text)}
+                onBlur={() => console.log("Updated:", user.email)}
+                keyboardType="email-address"
+              />
+              <IconButton icon="pencil" size={18} />
+            </View>
+          </View>
 
-        <Text style={styles.label}>Phone Number</Text>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={user.phoneNumber ? `+84 ${user.phoneNumber}` : "+84 "}
-            onChangeText={(text) => handleInputChange("phoneNumber", text)}
-            onBlur={() => console.log("Updated:", user.phoneNumber)}
-            keyboardType="phone-pad"
-          />
-          <IconButton icon="pencil" size={18} />
-        </View>
+          <View style={styles.informationRow}>
+            <Text style={styles.label}>Phone Number</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                value={user.phoneNumber ? `+84 ${user.phoneNumber}` : "+84 "}
+                onChangeText={(text) => handleInputChange("phoneNumber", text)}
+                onBlur={() => console.log("Updated:", user.phoneNumber)}
+                keyboardType="phone-pad"
+              />
+              <IconButton icon="pencil" size={18} />
+            </View>
+          </View>
 
-        <Text style={styles.label}>Total Bookings</Text>
-        <Text style={styles.totalBookings}>{bookings.length} Bookings</Text>
+          <View style={styles.informationRow}>
+            <Text style={styles.label}>Total Bookings</Text>
+            <Text style={styles.totalBookings}>{bookings.length} Bookings</Text>
+          </View>
+        </View>
+        {/* <Pressable
+          style={styles.signOutButton}
+          onPress={() => {
+            // console.log("user", user);
+          }}
+        >
+          <Text style={styles.signOutButtonText}>Check User</Text>
+        </Pressable> */}
+        <Pressable style={styles.signOutButton} onPress={() => handleLogout()}>
+          <Text style={styles.signOutButtonText}>Sign Out</Text>
+        </Pressable>
       </View>
-      <Pressable
-        style={styles.signOutButton}
-        onPress={() => {
-          // console.log("user", user);
-        }}
-      >
-        <Text style={styles.signOutButtonText}>Check User</Text>
-      </Pressable>
-      <Pressable style={styles.signOutButton} onPress={() => handleLogout()}>
-        <Text style={styles.signOutButtonText}>Sign Out</Text>
-      </Pressable>
     </View>
   );
 };

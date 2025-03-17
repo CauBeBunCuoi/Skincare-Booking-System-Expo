@@ -3,9 +3,19 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   header: {},
   container: {
+    backgroundColor: "transparent",
     padding: 16,
     flex: 1,
     alignItems: "center",
+  },
+  background: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
   },
   serviceInformationContainer: {
     width: "100%",
@@ -13,18 +23,34 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 }, // Bóng đổ xuống dưới
+    shadowOpacity: 0.3, // Độ mờ của bóng
+    shadowRadius: 6, // Độ lan của bóng
+    elevation: 5, // Bóng trên Android
+    backgroundColor: "black", // Quan trọng! Nếu không có background thì shadow sẽ không hiện
+    borderRadius: 10, // Bo góc để bóng không vuông
+    overflow: "hidden", // Đảm bảo bóng tròn theo hình
   },
   serviceInformationImage: {
     borderRadius: 10,
-    width: 200,
+    width: "100%",
     height: 200,
   },
   serviceInformationContent: {
-    paddingHorizontal: 10,
-    height: 180,
-    width: 160,
+    backgroundColor: "rgba(255, 255, 255, 0.5)",
+    padding: 10,
+    marginVertical: 10,
+    width: "100%",
     display: "flex",
     justifyContent: "space-around",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 }, // Bóng đổ xuống dưới
+    shadowOpacity: 0.3, // Độ mờ của bóng
+    shadowRadius: 6, // Độ lan của bóng
+    elevation: 5, // Bóng trên Android
+    borderRadius: 10, // Bo góc để bóng không vuông
+    overflow: "hidden", // Đảm bảo bóng tròn theo hình
   },
 
   serviceText: {
@@ -42,6 +68,8 @@ export const styles = StyleSheet.create({
 
   serviceDescriptonContent: {
     textAlign: "justify",
+    fontFamily: "Montserrat",
+    fontWeight: "bold",
   },
 
   stepDescription: {
@@ -49,6 +77,7 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginVertical: 10,
+    color: "#6D3B13",
   },
 
   stepContainer: {
@@ -71,5 +100,51 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     color: "white",
+  },
+  infoContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    width: "100%",
+  },
+
+  infoHeader: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  infoHeaderText: {
+    fontSize: 17,
+    fontWeight: "light",
+    color: "#78787A",
+    paddingLeft: 5,
+  },
+  infoText: {
+    fontSize: 17,
+  },
+  infoChipsContainer: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 2,
+  },
+  infoChip: {
+    backgroundColor: "white",
+    paddingVertical: 2, // Tăng khoảng cách theo chiều dọc
+    paddingHorizontal: 5, // Tăng khoảng cách theo chiều ngang
+    borderRadius: 20, // Bo góc mạnh hơn để giống chip
+    borderWidth: 1, // Độ dày viền
+    borderColor: "black", // Màu viền
+    borderStyle: "solid", // Kiểu viền
+    alignSelf: "center", // Canh giữa nếu cần
+    fontSize: 8,
+  },
+  infoFee: {
+    fontSize: 17,
+    fontWeight: "bold",
+    color: "#F9A80F",
   },
 });

@@ -7,6 +7,7 @@ import {
   ScrollView,
   Text,
   View,
+  ImageBackground,
 } from "react-native";
 import { useIsFocused, useRoute } from "@react-navigation/native";
 import { styles } from "./styles";
@@ -16,7 +17,9 @@ import SchedulePopup from "./Widget/BookingPopup";
 import { publicApi } from "@/app/api/instance/axiosInstance";
 import { callApi } from "@/app/api/main/api_call/api";
 import { formatLocalHostImageUrl } from "@/app/tool/ImageUrlHelper";
-
+import { FontAwesome5 } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
+import DividerUI from "@/components/ui/DividerUI";
 // const data = {
 //   service: {
 //     _id: "1abc",
@@ -121,6 +124,10 @@ import { formatLocalHostImageUrl } from "@/app/tool/ImageUrlHelper";
 //   ],
 // };
 
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat("vi-VN").format(amount) + " VND";
+};
+
 const ServiceDetailScreen = () => {
   // STATES
   const [loading, setLoading] = useState(true);
@@ -136,7 +143,9 @@ const ServiceDetailScreen = () => {
   // const [skinStatuses, setSkinStatuses] = useState([]);
   // const [skinTypes, setSkinTypes] = useState([]);
   const [popupVisible, setPopupVisible] = useState(false);
-  const [selectedTherapist, setSelectedTherapist] = useState<string | null>(null);
+  const [selectedTherapist, setSelectedTherapist] = useState<string | null>(
+    null
+  );
   const [selectedDate, setSelectedDate] = useState({});
   // HOOKS
   const isFocused = useIsFocused();
@@ -151,12 +160,8 @@ const ServiceDetailScreen = () => {
     setAttributes();
   }, [isFocused]);
 
-
-
-
   // FUNCTIONS
   const setAttributes = async () => {
-
     const service = await callApi({
       instance: publicApi,
       method: "get",
@@ -169,7 +174,6 @@ const ServiceDetailScreen = () => {
       setSkinTypes(serviceData.skinTypes);
       setSteps(serviceData.steps);
       setTherapists(serviceData.therapists);
-
     }
 
     setLoading(false);
@@ -185,76 +189,135 @@ const ServiceDetailScreen = () => {
     // setSelectedDate(null);
   };
   return (
-    <ScrollView>
-      {loading ? <Text>Loading...</Text>
-        :
-        <View style={styles.container}>
-          <View style={styles.serviceInformationContainer}>
-            <Image
-              source={{ uri: formatLocalHostImageUrl(service?.imageUrl) }}
-              style={styles.serviceInformationImage}
-            />
+    <View style={{ flex: 1 }}>
+      <ImageBackground
+        source={require("@/assets/images/backgrounds/serviceDetails/main.jpg")}
+        style={styles.background}
+      />
+      <ScrollView style={{ flex: 1 }}>
+        {loading ? (
+          <Text>Loading...</Text>
+        ) : (
+          <View style={styles.container}>
+            <View style={styles.serviceInformationContainer}>
+              <Image
+                source={{ uri: formatLocalHostImageUrl(service?.imageUrl) }}
+                style={styles.serviceInformationImage}
+              />
+            </View>
 
             <View style={styles.serviceInformationContent}>
-              <View style={styles.serviceInformationContent}>
-                <Text style={styles.serviceText}>
-                  Duration: {service?.duration} hours
-                </Text>
-                <Text style={styles.serviceText}>
-                  Skin Type: {(skinTypes.map(e => e.name)).join(", ")}
-                </Text>
-                <Text style={styles.serviceText}>
-                  Skin Status: {(skinStatuses.map(e => e.name)).join(", ")}
-                </Text>
-                <Text style={styles.serviceText}>
-                  Fee:{" "}
-                  {service?.fee
-                    ? `${service.fee} VND`
-                    : "N/A"}
+              <View style={styles.infoContainer}>
+                <View style={styles.infoHeader}>
+                  <FontAwesome5
+                    style={{ width: 20, textAlign: "center" }}
+                    name="clock"
+                    size={16}
+                    color="#78787A"
+                    regular
+                  />
+                  <Text style={styles.infoHeaderText}>Duration</Text>
+                </View>
+                <Text style={styles.infoText}>{service?.duration} hours</Text>
+              </View>
+              <View style={styles.infoContainer}>
+                <View style={styles.infoHeader}>
+                  <FontAwesome5
+                    style={{ width: 20, textAlign: "center" }}
+                    name="notes-medical"
+                    size={16}
+                    color="#78787A"
+                    regular
+                  />
+                  <Text style={styles.infoHeaderText}>Skin Types</Text>
+                </View>
+                <View style={styles.infoChipsContainer}>
+                  {skinTypes.map((e, index) => (
+                    <Text key={index} style={styles.infoChip}>
+                      {e.name}
+                    </Text>
+                  ))}
+                </View>
+              </View>
+              <View style={styles.infoContainer}>
+                <View style={styles.infoHeader}>
+                  <FontAwesome5
+                    style={{ width: 20, textAlign: "center" }}
+                    name="notes-medical"
+                    size={16}
+                    color="#78787A"
+                    regular
+                  />
+                  <Text style={styles.infoHeaderText}>Skin Statuses</Text>
+                </View>
+                <View style={styles.infoChipsContainer}>
+                  {skinStatuses.map((e, index) => (
+                    <Text key={index} style={styles.infoChip}>
+                      {e.name}
+                    </Text>
+                  ))}
+                </View>
+              </View>
+              <View style={styles.infoContainer}>
+                <View style={styles.infoHeader}>
+                  <FontAwesome5
+                    style={{ width: 20, textAlign: "center" }}
+                    name="money-bill-alt"
+                    size={16}
+                    color="#78787A"
+                    regular
+                  />
+                  <Text style={styles.infoHeaderText}>Fee</Text>
+                </View>
+                <Text style={styles.infoFee}>
+                  {service?.fee ? `${formatCurrency(service.fee)}` : "N/A"}
                 </Text>
               </View>
             </View>
-          </View>
 
-          <View style={styles.serviceDescriptonContainer}>
-            <Text style={styles.serviceDescriptonContent}>
-              {service?.description}
+            <View style={styles.serviceDescriptonContainer}>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={styles.serviceDescriptonContent}
+              >
+                {service?.description}
+              </Text>
+            </View>
+
+            <Text style={styles.stepDescription}>
+              Here’s a step-by-step breakdown of the procedure:
             </Text>
+
+            <View style={styles.stepContainer}>
+              {steps.map((step, index) => (
+                <StepWidget key={step._id} step={step} />
+              ))}
+            </View>
+
+            <Pressable style={styles.button} onPress={() => handleOpenPopUp()}>
+              <Text style={styles.buttonContent}>
+                {" "}
+                I Want To Book This Service{" "}
+              </Text>
+            </Pressable>
+
+            <SchedulePopup
+              visible={popupVisible}
+              service={service}
+              therapists={therapists}
+              selectedTherapist={selectedTherapist}
+              setSelectedTherapist={setSelectedTherapist}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              // handleSelectTherapist={handleSelectTherapist}
+              // handleDateChange={handleDateChange}
+              onClose={handleClosePopUp}
+            />
           </View>
-
-          <Text style={styles.stepDescription}>
-            Here’s a step-by-step breakdown of the procedure:
-          </Text>
-
-          <View style={styles.stepContainer}>
-            {steps.map((step, index) => (
-              <StepWidget key={step._id} step={step} />
-            ))}
-          </View>
-
-          <Pressable style={styles.button} onPress={() => handleOpenPopUp()}>
-            <Text style={styles.buttonContent}>
-              {" "}
-              I Want To Book This Service{" "}
-            </Text>
-          </Pressable>
-
-          <SchedulePopup
-            visible={popupVisible}
-            service={service}
-            therapists={therapists}
-            selectedTherapist={selectedTherapist}
-            setSelectedTherapist={setSelectedTherapist}
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            // handleSelectTherapist={handleSelectTherapist}
-            // handleDateChange={handleDateChange}
-            onClose={handleClosePopUp}
-          />
-        </View>
-      }
-
-    </ScrollView>
+        )}
+      </ScrollView>
+    </View>
   );
 };
 

@@ -1,19 +1,22 @@
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-const TherapistDegree = ({ data } :  {data : any[]}) => {
+const TherapistDegree = ({ data }: { data: any[] }) => {
   return (
     <>
-      {data.length > 0 && data.map((item) => (
-        <View key={item._id} style={styles.container}>
-          <MaterialCommunityIcons
-            name="certificate-outline"
-            size={24}
-            color="white"
-          />
-          <Text style={styles.text}>{item.description}</Text>
-        </View>
-      ))}
+      {data.length > 0 &&
+        data.map((item) => (
+          <View key={item._id} style={styles.container}>
+            <MaterialCommunityIcons
+              name="certificate-outline"
+              size={24}
+              color="white"
+            />
+            <Text numberOfLines={1} ellipsizeMode="tail" style={styles.text}>
+              {item.description}
+            </Text>
+          </View>
+        ))}
     </>
   );
 };
@@ -30,6 +33,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   text: {
+    width: "90%",
     paddingHorizontal: 8,
     fontSize: 9,
     fontWeight: "bold",

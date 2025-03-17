@@ -1,26 +1,41 @@
 import { StyleSheet, Text, View } from "react-native";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import LinearGradient from "react-native-linear-gradient";
+import { LinearGradient } from "expo-linear-gradient";
 
 const CustomerRate = ({ rate }) => {
   return (
-    <View style={styles.rateContainer}>
+    <LinearGradient
+      colors={["#4B79F1", "#FF47CB"]} // Gradient xanh đậm
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.rateContainer}
+    >
       <View style={styles.rateHeader}>
         <View style={styles.userAvatar}>
           <FontAwesome name="user-circle-o" size={24} color="white" />
         </View>
         <View style={styles.rateInformations}>
-          <Text style={styles.customerName}>{rate.customerName}</Text>
+          <Text style={styles.customerName}>
+            {rate.customerName ? rate.customerName : "Ẩn Danh"}
+          </Text>
           <Text style={styles.customerRate}>
-            {rate.rate.toFixed(1)}{" "}
-            <FontAwesome name="star" size={18} color="gold" />
+            {/* {rate.rate.toFixed(1)}{" "}
+            <FontAwesome name="star" size={18} color="gold" /> */}
+            {[...Array(Math.floor(rate.rate))].map((_, index) => (
+              <FontAwesome key={index} name="star" size={16} color="gold" />
+            ))}
+
+            {/* Nếu có phần thập phân, render một nửa sao */}
+            {rate.rate % 1 >= 0.5 && (
+              <FontAwesome name="star-half-full" size={16} color="gold" />
+            )}
           </Text>
         </View>
       </View>
       <View style={styles.rateContentContainer}>
         <Text style={styles.rateContentText}>{rate.feedbackContent}</Text>
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 

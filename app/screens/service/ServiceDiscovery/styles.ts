@@ -7,10 +7,19 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  background: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+  },
   title: {
-    fontSize: 20,
+    fontSize: 40,
     fontWeight: "bold",
-    color: "#8EB69B",
+    color: "white",
     paddingVertical: 20,
   },
   subTitle: {
@@ -23,7 +32,7 @@ export const styles = StyleSheet.create({
   titleDescription: {
     fontSize: 12,
     fontWeight: "normal",
-    color: "#0B2B26",
+    color: "black",
     marginTop: 20,
     paddingHorizontal: 10,
     textAlign: "center",

@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import {
+  ImageBackground,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useIsFocused, useRoute } from "@react-navigation/native";
 import { styles } from "./styles";
 import { useNavigation } from "expo-router";
@@ -67,14 +73,12 @@ const data = {
   },
 };
 
-
-
 const BookingDetailScreen = () => {
   // STATES
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState({});
   const [isResultShow, setIsResultShow] = useState(false);
-
+  const [therapist, setTherapist] = useState(null);
   // HOOKS
   const isFocused = useIsFocused();
   const route = useRoute();
@@ -83,11 +87,10 @@ const BookingDetailScreen = () => {
   const { bookingId } = route.params;
 
   useEffect(() => {
-    navigation.setOptions({ title: `Booking ID: ${bookingId}` });
+    navigation.setOptions({ title: `Booking Details` });
     setLoading(true);
 
     setAttributes();
-
   }, [isFocused]);
 
   // FUNCTIONS
@@ -98,11 +101,31 @@ const BookingDetailScreen = () => {
       instance: loginRequiredApi,
       method: "get",
       url: `/bookings/${bookingId}`,
-    })
+    });
     if (bookingDetailData.success) {
       setBooking(bookingDetailData.data);
+      if (bookingDetailData.data.booking.isAssigned === true) {
+        await fetchTherapist(
+          bookingDetailData.data.booking.assignedTherapistId
+        );
+      }
     }
     setLoading(false);
+  };
+
+  const fetchTherapist = async (therapistId) => {
+    const therapistData = await callApi({
+      instance: loginRequiredApi,
+      method: "get",
+      url: `/accounts/${therapistId}`,
+    });
+    if (therapistData.success) {
+      setTherapist(therapistData.data.account);
+      console.log(
+        "Get Details of Therapist with id: ",
+        therapistData.data.account._id
+      );
+    }
   };
 
   const handleDeclined = async () => {
@@ -111,7 +134,7 @@ const BookingDetailScreen = () => {
       instance: loginRequiredApi,
       method: "post",
       url: `/bookings/${bookingId}/cancel`,
-    })
+    });
     if (declinedData.success) {
       navigation.goBack();
     }
@@ -123,66 +146,84 @@ const BookingDetailScreen = () => {
     setIsResultShow(true);
   };
 
+  const handleCloseResult = () => {
+    console.log("Đóng popup kết quả");
+    setIsResultShow(false);
+  };
+
   return (
-    <View style={styles.container}>
-      {!loading ? (
-        <View
-          style={{
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <BasicInformations
-            id={booking.booking._id}
-            serviceName={booking.service.name}
-            totalFee={booking.booking.totalFee}
-            bookingStatusId={booking.booking.bookStatusId}
-            bookingDate= {booking.booking.bookingDate}
-            therapist={booking.therapist}
-          />
+    <View style={{ flex: 1 }}>
+      <ImageBackground
+        source={require("@/assets/images/backgrounds/bookingDetails/main.jpg")}
+        style={styles.background}
+      />
 
-          <TimeInformations
-            appointmentTime={booking.booking.appointmentTime}
-            startTime={booking.booking.startTime}
-            endTime={booking.booking.endTime}
-            bookingStatusId={booking.booking.bookStatusId}
-          />
+      <View style={{ flex: 1 }}>
+        {/* Thêm View này */}
+        <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+          {!loading ? (
+            <>
+              <View style={{ width: "100%", alignItems: "center" }}>
+                <View style={styles.titleContainer}>
+                  <Text style={styles.titleContainerText}>Booking Details</Text>
+                  <Text style={styles.titleContainerTextId}>
+                    #{booking.booking._id}
+                  </Text>
+                </View>
+              </View>
+              <View style={{ alignItems: "center", width: "100%" }}>
+                <BasicInformations
+                  id={booking.booking._id}
+                  serviceName={booking.service.name}
+                  totalFee={booking.booking.totalFee}
+                  bookingStatusId={booking.booking.bookStatusId}
+                  bookingDate={booking.booking.bookingDate}
+                  therapist={therapist ? therapist : null}
+                />
 
-          {booking.booking.bookStatusId === 5 ||
-            booking.booking.bookStatusId === 6 ? (
-            <TouchableOpacity
-              onPress={() => handleShowResult()}
-              style={styles.resultButton}
-            >
-              <Text style={styles.resultText}>Result From Therapist</Text>
-            </TouchableOpacity>
-          ) : null}
+                <TimeInformations
+                  appointmentTime={booking.booking.appointmentTime}
+                  startTime={booking.booking.startTime}
+                  endTime={booking.booking.endTime}
+                  bookingStatusId={booking.booking.bookStatusId}
+                />
 
-          {booking.booking.bookStatusId < 5 && (
-            <TouchableOpacity
-              onPress={() => handleDeclined()}
-              style={styles.declinedButton}
-            >
-              <Text style={styles.declinedText}>Declined Booking</Text>
-            </TouchableOpacity>
+                {booking.booking.bookStatusId === 5 ||
+                booking.booking.bookStatusId === 6 ? (
+                  <TouchableOpacity
+                    onPress={handleShowResult}
+                    style={styles.resultButton}
+                  >
+                    <Text style={styles.resultText}>Result From Therapist</Text>
+                  </TouchableOpacity>
+                ) : null}
+
+                {booking.booking.bookStatusId < 5 && (
+                  <TouchableOpacity
+                    onPress={handleDeclined}
+                    style={styles.declinedButton}
+                  >
+                    <Text style={styles.declinedText}>Declined Booking</Text>
+                  </TouchableOpacity>
+                )}
+
+                {booking.executionResult && (
+                  <ResultPopup
+                    bookingId={booking.booking._id}
+                    serviceName={booking.service.name}
+                    therapist={therapist ? therapist : null}
+                    executionResult={booking.executionResult}
+                    isVisible={isResultShow}
+                    onClose={handleCloseResult}
+                  />
+                )}
+              </View>
+            </>
+          ) : (
+            <Text>Loading...</Text>
           )}
-          {booking.executionResult && (
-            <ResultPopup
-              bookingId={booking.booking._id}
-              serviceName={booking.service.name}
-              therapist={booking.therapist}
-              executionResult={booking.executionResult}
-              isVisible={isResultShow}
-              onClose={() => setIsResultShow(false)}
-            />
-          )}
-
-        </View>
-      ) : (
-        <Text>Loading...</Text>
-      )}
+        </ScrollView>
+      </View>
     </View>
   );
 };

@@ -36,7 +36,7 @@ const TherapistInformation = ({ data, isSelection }) => {
     <View style={styles.container}>
       <View style={styles.card}>
         <Image
-          source={{uri: formatLocalHostImageUrl(therapist.imageUrl)}}
+          source={{ uri: formatLocalHostImageUrl(therapist.imageUrl) }}
           style={styles.image}
         />
         <View style={styles.infoContainer}>
@@ -44,36 +44,28 @@ const TherapistInformation = ({ data, isSelection }) => {
           <Text style={styles.degree}>{therapistDegree}</Text>
           <View style={styles.ratingContainer}>
             <Text style={styles.rating}>{analyzing.avgRate.toFixed(1)}</Text>
-            <FontAwesome name="star" size={16} color="gold" />
+
+            {/* Render số sao */}
+            {[...Array(Math.floor(analyzing.avgRate))].map((_, index) => (
+              <FontAwesome key={index} name="star" size={16} color="gold" />
+            ))}
+
+            {/* Nếu có phần thập phân, render một nửa sao */}
+            {analyzing.avgRate % 1 >= 0.5 && (
+              <FontAwesome name="star-half-full" size={16} color="gold" />
+            )}
           </View>
 
           <Text style={styles.description}>{therapistQuote}</Text>
         </View>
       </View>
-      {/* <View style={styles.statsContainer}>
-        <View>
-          <Text style={styles.stats}>{analyzing.totalCustomer}</Text>
-          <Text style={styles.label}>Customers</Text>
-        </View>
-        <View>
-          <Text style={styles.stats}>{analyzing.totalBooking}</Text>
-          <Text style={styles.label}>Bookings</Text>
-        </View>
-        {!isSelection && (
-          <Button
-            title="Book"
-            onPress={() => {
-              handleBooking();
-            }}
-          />
-        )}
-      </View> */}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 8,
     width: "90%",
     padding: 16,
     borderRadius: 10,
@@ -87,7 +79,6 @@ const styles = StyleSheet.create({
   },
   card: {
     flexDirection: "row",
-    backgroundColor: "#f9f9f9",
     borderRadius: 8,
     padding: 16,
     alignItems: "center",

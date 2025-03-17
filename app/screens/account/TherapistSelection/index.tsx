@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { FlatList, ScrollView, Text, View } from "react-native";
+import {
+  FlatList,
+  ImageBackground,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { styles } from "./styles";
 import TherapistInformation from "../../service/ServiceDetail/Widget/TherapistInformation";
@@ -104,33 +110,42 @@ const TherapistSelectionScreen = () => {
   const { otherBackgrounds } = extractTherapistInfo(data);
 
   return (
-    <ScrollView style={styles.scrollContainer}>
-      <View style={styles.container}>
-        <Text>Therapist Selection Screen</Text>
-        <TherapistInformation data={data} isSelection={true} />
-        <TherapistDegree data={otherBackgrounds} />
-        <TherapistExperiences services={data.services} />
+    <View style={{ flex: 1 }}>
+      <ImageBackground
+        source={require("@/assets/images/backgrounds/therapist/main.jpg")}
+        style={styles.background}
+      />
+      <ScrollView style={styles.scrollContainer}>
+        <View style={styles.container}>
+          <Text>Therapist Selection Screen</Text>
+          <TherapistInformation data={data} isSelection={true} />
+          <TherapistDegree data={otherBackgrounds} />
+          <TherapistExperiences services={data.services} />
 
-        <DividerUI />
+          <DividerUI />
 
-        <View style={styles.feedbackDescriptionContainer}>
-          <Text style={styles.feedbackDescriptionText}>
-            Rating From User About Doing{" "}
-            <Text style={{ color: "red" }}>
-              {service ? service.name : "Unknown Service"}
-            </Text>{" "}
-            With
-            <Text style={{ color: "red" }}> Dr.{data.therapist.fullName}</Text>
-          </Text>
+          <View style={styles.feedbackDescriptionContainer}>
+            <Text style={styles.feedbackDescriptionText}>
+              Rating From User About Doing{" "}
+              <Text style={{ color: "red" }}>
+                {service ? service.name : "Unknown Service"}
+              </Text>{" "}
+              With
+              <Text style={{ color: "red" }}>
+                {" "}
+                Dr.{data.therapist.fullName}
+              </Text>
+            </Text>
+          </View>
+
+          <View style={{ width: "100%", alignItems: "center" }}>
+            {data.feedbackRates.map((feedbackRate) => (
+              <CustomerRate key={feedbackRate._id} rate={feedbackRate} />
+            ))}
+          </View>
         </View>
-
-        <View style={{ width: "100%", alignItems: "center" }}>
-          {data.feedbackRates.map((feedbackRate) => (
-            <CustomerRate key={feedbackRate._id} rate={feedbackRate} />
-          ))}
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 

@@ -1,7 +1,8 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
+import { Dimensions } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 interface ServiceType {
   _id: string;
   name: string;
@@ -13,12 +14,17 @@ interface ServiceTypeCardProps {
   serviceType: ServiceType;
 }
 
+const w = Dimensions.get("window").width;
+
 const ServiceTypeCard: React.FC<ServiceTypeCardProps> = ({ serviceType }) => {
   const navigation = useNavigation();
 
   return (
-    <View style={styles.card}>
-      <View style={{ flexDirection: "row" }}>
+    <LinearGradient
+      colors={["#617BE245", "#F9A80F45"]} // Thêm '29' để đặt opacity = 16%
+      style={styles.card}
+    >
+      <View style={{ flexDirection: "row", gap: 10 }}>
         <Image
           source={{
             uri: "https://i.pinimg.com/736x/c7/2e/da/c72eda3a302e17c14e77b17cf8d5bad8.jpg",
@@ -27,7 +33,13 @@ const ServiceTypeCard: React.FC<ServiceTypeCardProps> = ({ serviceType }) => {
         />
         <View>
           <Text style={styles.title}>{serviceType.name}</Text>
-          <Text style={styles.description}>{serviceType.description}</Text>
+          <Text
+            numberOfLines={4}
+            ellipsizeMode="tail"
+            style={styles.description}
+          >
+            {serviceType.description}
+          </Text>
         </View>
       </View>
       <View style={styles.content}>
@@ -47,14 +59,13 @@ const ServiceTypeCard: React.FC<ServiceTypeCardProps> = ({ serviceType }) => {
           <Text style={styles.buttonText}>Explore This Service Group</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
     width: "95%",
-    backgroundColor: "#fff",
     padding: 16,
     borderRadius: 10,
     overflow: "hidden",
@@ -68,6 +79,7 @@ const styles = StyleSheet.create({
   image: {
     width: 100,
     height: 100,
+    borderRadius: 10,
   },
   content: {
     marginTop: 10,
@@ -76,6 +88,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   title: {
+    width: w * 0.5,
     fontSize: 15,
     fontWeight: "bold",
     marginBottom: 5,
@@ -83,16 +96,18 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 10,
-    color: "#555",
+    color: "white",
     marginBottom: 10,
     width: 250,
     paddingLeft: 5,
+    paddingRight: 5,
     textAlign: "left",
   },
   serviceCount: {
     fontSize: 14,
     fontWeight: "bold",
     marginBottom: 2,
+    color: "#F9510F",
   },
   button: {
     backgroundColor: "#617BE2",

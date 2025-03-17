@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Dimensions, FlatList, Text, View } from "react-native";
+import {
+  Dimensions,
+  FlatList,
+  ImageBackground,
+  Text,
+  View,
+} from "react-native";
 import { useIsFocused, useRoute } from "@react-navigation/native";
 import { styles } from "./styles";
 import ServiceListCard from "./Widget/ServiceListCard";
@@ -261,6 +267,7 @@ const ServiceListScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { serviceTypeId, serviceTypeName } = route.params;
+  const [isFilter, setIsFilter] = useState(false);
 
   useEffect(() => {
     const cleanUp = () => {
@@ -310,26 +317,35 @@ const ServiceListScreen = () => {
     });
     if (serviceType.success) {
       console.log(serviceType.data.serviceTypes);
-      setServiceType(serviceType.data.serviceTypes.find((item) => item._id=== serviceTypeId));
+      setServiceType(
+        serviceType.data.serviceTypes.find((item) => item._id === serviceTypeId)
+      );
     } else {
       console.log("\n\n\nError: ", serviceType.message.content);
     }
 
-
     await handleFilterServices(filterSkinTypes, filterSkinStatuses);
-
 
     setLoading(false);
   };
 
-  const handleFilterServices = async (filter_SkinTypes , filter_SkinStatuses) => {
-
-    const filter ={
+  const handleFilterServices = async (
+    filter_SkinTypes,
+    filter_SkinStatuses
+  ) => {
+    const filter = {
       serviceTypeId: serviceTypeId,
       skinTypes: filterSkinTypes,
       skinStatuses: filterSkinStatuses,
+    };
+
+    if (filter_SkinTypes.length === 0 && filter_SkinStatuses.length === 0) {
+      setIsFilter(false);
+    } else {
+      setIsFilter(true);
     }
-    console.log("\n\n\nfilter",filter);
+
+    console.log("\n\n\nfilter", filter);
     const filteredServices = await callApi({
       instance: publicApi,
       method: "post",
@@ -339,23 +355,20 @@ const ServiceListScreen = () => {
         skinTypes: filter_SkinTypes,
         skinStatuses: filter_SkinStatuses,
       },
+    });
 
-    })
-    
     if (filteredServices.success) {
       setServices(filteredServices.data.services);
     } else {
       console.log("\n\n\nError: ", filteredServices.message.content);
     }
-
-  }
+  };
 
   const handleServiceDetail = (serviceId) => {
     navigation.navigate("ServiceDetail", { serviceId });
   };
 
   const handleSelectSkinStatus = async (items) => {
-
     await setFilterSkinStatuses(items);
     setLoading(true);
 
@@ -365,8 +378,8 @@ const ServiceListScreen = () => {
   };
 
   const handleSelectSkinTypes = async (items) => {
-    for(const item of items){
-      console.log("\n\nitem",item);
+    for (const item of items) {
+      console.log("\n\nitem", item);
     }
     await setFilterSkinTypes(items);
     setLoading(true);
@@ -374,7 +387,6 @@ const ServiceListScreen = () => {
     await handleFilterServices(items, filterSkinStatuses);
 
     setLoading(false);
-
   };
 
   const sortServices = (sortId) => {
@@ -400,7 +412,14 @@ const ServiceListScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Service Group</Text>
+      <ImageBackground
+        source={require("@/assets/images/backgrounds/serviceGroups/main.jpg")}
+        style={styles.background}
+      />
+
+      <Text style={{ ...styles.title, fontFamily: "PostNoBillBold" }}>
+        Service Group
+      </Text>
       {loading ? (
         <Text>Loading...</Text>
       ) : (
@@ -458,6 +477,14 @@ const ServiceListScreen = () => {
               }}
             />
           </View>
+          {isFilter && (
+            <View style={styles.filterInfo}>
+              <Text style={styles.filterInfoText}>
+                {services.length} services found
+              </Text>
+            </View>
+          )}
+
           <View style={{ width: w / 1.1, flex: 1 }}>
             <FlatList
               data={services}

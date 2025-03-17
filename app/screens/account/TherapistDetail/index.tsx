@@ -12,6 +12,7 @@ import ServiceCardSimple from "@/components/services/ServiceCardSimple";
 import ServiceSimpleCarousel from "@/components/services/ServiceSimpleCarousel";
 import { callApi } from "@/app/api/main/api_call/api";
 import { publicApi } from "@/app/api/instance/axiosInstance";
+import { ImageBackground } from "react-native";
 
 // const data = {
 //   therapist: {
@@ -126,7 +127,7 @@ const TherapistDetailScreen = () => {
       instance: publicApi,
       method: "get",
       url: `/accounts/${therapistId}/therapist-detail`,
-    })
+    });
     if (therapistData.success) {
       setTherapist(therapistData.data.therapist);
       setAnalyzing(therapistData.data.analyzing);
@@ -137,40 +138,48 @@ const TherapistDetailScreen = () => {
     setLoading(false);
   };
 
-  const extractTherapistInfo = (backgrounds) : any[] => {
-    const otherBackgrounds  = backgrounds.filter(
+  const extractTherapistInfo = (backgrounds): any[] => {
+    const otherBackgrounds = backgrounds.filter(
       (item) =>
         !item.description.startsWith("#") && !item.description.includes("@")
-    ) ;
+    );
     return otherBackgrounds;
   };
 
   // const { otherBackgrounds } = extractTherapistInfo(data);
 
   return (
-    <ScrollView style={styles.scrollContainer}>
-      {loading ? (
-        <Text>Loading...</Text>
-      ) : (
-        <View style={styles.container}>
-          <TherapistInformation data={
-            {
-            therapist, analyzing, backgrounds, 
-          }       
-          } isSelection={false} />
-          <TherapistDegree data={extractTherapistInfo(backgrounds)} />
-          <TherapistExperiences services={services} />
-          <DividerUI />
-          <View style={styles.servicesContainer}>
-            <Text style={styles.servicesTitle}>
-              What does this Therapist do ?
-            </Text>
-            <ServiceSimpleCarousel services={services} />
+    <View style={{ flex: 1 }}>
+      <ImageBackground
+        source={require("@/assets/images/backgrounds/therapist/main.jpg")}
+        style={styles.background}
+      />
+      <ScrollView style={styles.scrollContainer}>
+        {loading ? (
+          <Text>Loading...</Text>
+        ) : (
+          <View style={styles.container}>
+            <TherapistInformation
+              data={{
+                therapist,
+                analyzing,
+                backgrounds,
+              }}
+              isSelection={false}
+            />
+            <TherapistDegree data={extractTherapistInfo(backgrounds)} />
+            <TherapistExperiences services={services} />
+            <DividerUI />
+            <View style={styles.servicesContainer}>
+              <Text style={styles.servicesTitle}>
+                What does this Therapist do ?
+              </Text>
+              <ServiceSimpleCarousel services={services} />
+            </View>
           </View>
-        </View>
-      )}
-
-    </ScrollView>
+        )}
+      </ScrollView>
+    </View>
   );
 };
 

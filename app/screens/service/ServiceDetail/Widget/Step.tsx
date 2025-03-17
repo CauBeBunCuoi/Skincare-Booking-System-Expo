@@ -3,9 +3,11 @@ import React from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 // import { Image } from "expo-image";
 import FastImage from "react-native-fast-image";
-
+import { Dimensions } from "react-native";
+const w = Dimensions.get("window").width;
 const StepWidget = ({ step }) => {
   const isOdd = step.stepOrder % 2 !== 0;
+
   return (
     <View style={styles.container}>
       {isOdd ? (
@@ -20,10 +22,20 @@ const StepWidget = ({ step }) => {
                 onError={(e) => console.log("Lỗi ảnh:", e.nativeEvent)}
               />
               <View style={styles.textContainer}>
-                <Text style={styles.title}>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={styles.title}
+                >
                   Step {step.stepOrder}: {step.name}
                 </Text>
-                <Text style={styles.description}>{step.description}</Text>
+                <Text
+                  numberOfLines={7}
+                  ellipsizeMode="tail"
+                  style={styles.description}
+                >
+                  {step.description}
+                </Text>
               </View>
             </View>
           </View>
@@ -33,16 +45,26 @@ const StepWidget = ({ step }) => {
           <View style={styles.rightAlign}>
             <View style={styles.background}>
               <View style={styles.textContainer}>
-                <Text style={styles.title}>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={styles.title}
+                >
                   Step {step.stepOrder}: {step.name}
                 </Text>
-                <Text style={styles.description}>{step.description}</Text>
+                <Text
+                  numberOfLines={7}
+                  ellipsizeMode="tail"
+                  style={styles.description}
+                >
+                  {step.description}
+                </Text>
               </View>
               <Image
                 source={{
                   uri: formatLocalHostImageUrl(step.imageUrl),
                 }}
-                style={{ width: 100, height: 100 }}
+                style={styles.image}
                 onError={(e) => console.log("Lỗi ảnh:", e.nativeEvent)}
               />
             </View>
@@ -66,11 +88,12 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   background: {
-    width: "80%",
+    width: "90%",
+    height: w * 0.25,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(128,128,128,0.5)",
-    padding: 10,
+    justifyContent: "space-between",
+    backgroundColor: "rgba(255,255,255,0.28)",
     marginVertical: 5,
     borderRadius: 10,
   },
@@ -78,22 +101,24 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   image: {
-    width: 100,
-    height: 100,
+    width: w * 0.25,
+    height: w * 0.25,
     borderRadius: 5,
-    marginHorizontal: 5,
   },
   textContainer: {
-    flex: 1,
+    height: w * 0.25,
+    padding: 5,
   },
   title: {
     fontSize: 12,
     fontWeight: "bold",
+    width: w * 0.5,
   },
   description: {
     fontSize: 9,
-    width: 150,
+    flex: 1,
     textAlign: "left",
+    width: w * 0.55,
   },
 });
 

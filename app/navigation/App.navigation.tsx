@@ -225,9 +225,9 @@ export const AppBottomNavigation = () => {
         name="SERVICES"
         component={ServicesStackScreen}
         options={{
-          tabBarLabel: "Services Discovery",
+          tabBarLabel: "Discovery",
           tabBarIcon: ({ color, size }) => {
-            return <Icon name="briefcase" size={size} color={color} />;
+            return <Icon name="magnify" size={size} color={color} />;
           },
           tabBarShowLabel: true,
         }}

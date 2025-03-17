@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   Button,
   FlatList,
+  ImageBackground,
   ScrollView,
   StyleSheet,
   Text,
@@ -102,7 +103,7 @@ const TherapistSelectionPopup = ({ therapistId, serviceId }) => {
 
     setAttributes();
   }, [isFocused]);
-  
+
   const setAttributes = async () => {
     const therapistSelection = await callApi({
       instance: publicApi,
@@ -118,7 +119,7 @@ const TherapistSelectionPopup = ({ therapistId, serviceId }) => {
     }
 
     setLoading(false);
-  }
+  };
 
   const extractTherapistInfo = (backgrounds) => {
     const otherBackgrounds = backgrounds.filter(
@@ -131,43 +132,42 @@ const TherapistSelectionPopup = ({ therapistId, serviceId }) => {
   // const { otherBackgrounds } = extractTherapistInfo(data);
 
   return (
-    <ScrollView
-      style={{ flex: 1, width: "100%" }}
-      contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}
-      keyboardShouldPersistTaps="handled"
-    >
-      {loading ? (
-        <Text>Loading...</Text>
-      ) : (
-        <View style={styles.container}>
-        <TherapistInformation data={{
-          therapist, analyzing, backgrounds
-        }} isSelection={true} />
-        <TherapistDegree data={extractTherapistInfo(backgrounds)} />
-        <TherapistExperiences services={data.services} />
+    <View style={{ flex: 1 }}>
+      <ImageBackground
+        source={require("@/assets/images/backgrounds/therapist/main.jpg")}
+        style={styles.background}
+      />
+      <ScrollView
+        style={{ flex: 1, width: "100%" }}
+        contentContainerStyle={{ flexGrow: 1, alignItems: "center" }}
+        keyboardShouldPersistTaps="handled"
+      >
+        {loading ? (
+          <Text>Loading...</Text>
+        ) : (
+          <View style={styles.container}>
+            <TherapistInformation
+              data={{
+                therapist,
+                analyzing,
+                backgrounds,
+              }}
+              isSelection={true}
+            />
+            <TherapistDegree data={extractTherapistInfo(backgrounds)} />
+            <TherapistExperiences services={data.services} />
 
-        <DividerUI />
+            <DividerUI />
 
-        {/* <View style={styles.feedbackDescriptionContainer}>
-          <Text style={styles.feedbackDescriptionText}>
-            Rating From User About Doing{" "}
-            <Text style={{ color: "red" }}>
-              {service ? service.name : "Unknown Service"}
-            </Text>{" "}
-            With
-            <Text style={{ color: "red" }}> Dr.{data.therapist.fullName}</Text>
-          </Text>
-        </View> */}
-
-        <View style={{ width: "100%", alignItems: "center" }}>
-          {feedbackRates.map((feedbackRate) => (
-            <CustomerRate key={feedbackRate._id} rate={feedbackRate} />
-          ))}
-        </View>
-      </View>
-      )}
-      
-    </ScrollView>
+            <View style={{ width: "100%", alignItems: "center" }}>
+              {feedbackRates.map((feedbackRate) => (
+                <CustomerRate key={feedbackRate._id} rate={feedbackRate} />
+              ))}
+            </View>
+          </View>
+        )}
+      </ScrollView>
+    </View>
   );
 };
 
@@ -177,7 +177,15 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
-    backgroundColor: "#fff",
+  },
+  background: {
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   container: {
     flex: 1,

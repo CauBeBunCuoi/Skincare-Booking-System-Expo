@@ -11,7 +11,9 @@ const TherapistDegree = ({ data }) => {
             size={24}
             color="white"
           />
-          <Text style={styles.text}>{item.description}</Text>
+          <Text numberOfLines={1} ellipsizeMode="tail" style={styles.text}>
+            {item.description}
+          </Text>
         </View>
       ))}
     </>
@@ -30,6 +32,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   text: {
+    width: "90%",
     paddingHorizontal: 8,
     fontSize: 9,
     fontWeight: "bold",

@@ -21,6 +21,7 @@ import { TherapistSelectionScreen } from "@/app/screens/account";
 import TherapistSelectionPopup from "./TherapistSelectionPopup";
 import { callApi } from "@/app/api/main/api_call/api";
 import { loginRequiredApi, publicApi } from "@/app/api/instance/axiosInstance";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 const scheduleList = [
   {
@@ -112,12 +113,18 @@ const randomTherapist = {
 };
 
 // Component hiển thị mỗi giờ
-const HourCard = ({ selectedTime, time }: { time: string, selectedTime: string }) => {
+const HourCard = ({
+  selectedTime,
+  time,
+}: {
+  time: string;
+  selectedTime: string;
+}) => {
   return (
     <View style={selectedTime == time ? styles.hourSelected : styles.hourCard}>
       <Text style={styles.hourText}>{formatSingleTime(time)}</Text>
     </View>
-  )
+  );
 };
 
 // Hàm format giờ
@@ -134,9 +141,6 @@ const SchedulePopup = ({
 
   selectedDate,
   setSelectedDate,
-
-
-
 
   onClose,
 }: any) => {
@@ -205,7 +209,6 @@ const SchedulePopup = ({
         setSelectedDate(fetchSchedules.data.schedules[0]);
         setSelectedTherapist(randomTherapist);
       }
-
     } else {
       const fetchSchedules = await callApi({
         instance: publicApi,
@@ -220,9 +223,6 @@ const SchedulePopup = ({
       }
     }
     setIsLoading(false);
-
-
-
   };
 
   const handleSelectTherapist = async (selectedTherapist) => {
@@ -269,8 +269,12 @@ const SchedulePopup = ({
   const handleConfirm = async () => {
     // GỌI API Ở ĐÂY ĐỂ BOOKING
     console.log("Booking Successfully, Details: ", finalBookingDetails);
-    finalBookingDetails.isAssigned = selectedTherapist._id === "randomTherapist" ? false : true;
-    finalBookingDetails.assignedTherapistId = selectedTherapist._id === "randomTherapist" ? null : selectedTherapist._id;
+    finalBookingDetails.isAssigned =
+      selectedTherapist._id === "randomTherapist" ? false : true;
+    finalBookingDetails.assignedTherapistId =
+      selectedTherapist._id === "randomTherapist"
+        ? null
+        : selectedTherapist._id;
     const book = await callApi({
       instance: loginRequiredApi,
       method: "post",
@@ -283,7 +287,7 @@ const SchedulePopup = ({
         routes: [{ name: "BOOKING", params: { screen: "BookingHistory" } }],
       });
       onClose();
-    }else{
+    } else {
       Alert.alert("Booking Failed", "Please try again later", [
         {
           text: "OK",
@@ -291,8 +295,6 @@ const SchedulePopup = ({
         },
       ]);
     }
-
-    
   };
 
   return (
@@ -364,7 +366,9 @@ const SchedulePopup = ({
                       keyboardShouldPersistTaps="handled"
                     >
                       <TherapistSelectionPopup
-                        therapistId={selectedTherapist ? selectedTherapist._id : null}
+                        therapistId={
+                          selectedTherapist ? selectedTherapist._id : null
+                        }
                         serviceId={service._id}
                       />
                     </ScrollView>
@@ -414,7 +418,7 @@ const SchedulePopup = ({
                         style={styles.dropdownButtonArrowStyle}
                       />
                     </View>
-                  )
+                  );
                 }}
                 renderItem={(item, index, isSelected) => (
                   <View
@@ -429,13 +433,14 @@ const SchedulePopup = ({
                 buttonTextStyle={{ fontSize: 16 }}
               />
 
-              <Text style={{ fontSize: 16, marginTop: 20 }}>Giờ có sẵn: {schedules.length > 0 ? "" : "Không có lịch hẹn nào"}
-
+              <Text style={{ fontSize: 16, marginTop: 20 }}>
+                Giờ có sẵn:{" "}
+                {schedules.length > 0 ? "" : "Không có lịch hẹn nào"}
               </Text>
 
               {/* Hiển thị danh sách giờ tương ứng */}
-              {selectedDate && (
-                <View style={{ flex: 1, width: "100%" }}>
+              {selectedDate ? (
+                <View style={{ width: "100%" }}>
                   <FlatList
                     data={selectedDate.hours}
                     numColumns={3}
@@ -447,6 +452,11 @@ const SchedulePopup = ({
                     )}
                   />
                 </View>
+              ) : (
+                <View style={styles.noDateContainer}>
+                  <FontAwesome5 name="sad-tear" size={40} color="#555" />
+                  <Text style={styles.noDateText}>No available date</Text>
+                </View>
               )}
             </View>
           ) : (
@@ -456,11 +466,28 @@ const SchedulePopup = ({
           {isConfirmButtonVisible && (
             <View style={styles.confirmBookingContainer}>
               <View style={styles.bookingInformationsContainer}>
-                <Text>This Is Your Booking Details</Text>
-                <Text>Service ID: {finalBookingDetails.serviceId}</Text>
-                <Text>Appointment Time: {appointmentTime}</Text>
-                <Text>Appointment Date: {selectedDate?.date}</Text>
-                <Text>Therapist: {selectedTherapist.fullName}</Text>
+                <Text
+                  style={{
+                    fontWeight: "bold",
+                    fontStyle: "italic",
+                    color: "#5468B7",
+                  }}
+                >
+                  This Is Your Booking Details
+                </Text>
+                <Text>
+                  <Text style={{ fontWeight: "bold" }}>Appointment Time:</Text>{" "}
+                  {appointmentTime}
+                </Text>
+
+                <Text>
+                  <Text style={{ fontWeight: "bold" }}>Appointment Date:</Text>{" "}
+                  {selectedDate?.date}
+                </Text>
+                <Text>
+                  <Text style={{ fontWeight: "bold" }}>Therapist:</Text>{" "}
+                  {selectedTherapist.fullName}
+                </Text>
               </View>
               <TouchableOpacity
                 style={styles.confirmButton}
@@ -530,7 +557,6 @@ const styles = StyleSheet.create({
   timeSelectContainer: {
     padding: 5,
     marginVertical: 10,
-    height: 300,
     width: "100%",
     alignItems: "flex-start",
   },
@@ -664,6 +690,17 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     backgroundColor: "rgba(128, 128, 128, 0.3)",
     borderRadius: 8,
+  },
+  noDateContainer: {
+    width: "100%",
+    height: 200,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  noDateText: {
+    fontSize: 20,
+    color: "#555",
+    fontWeight: "bold",
   },
 });
 

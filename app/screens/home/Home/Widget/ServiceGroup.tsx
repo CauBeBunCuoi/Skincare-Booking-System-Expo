@@ -23,7 +23,7 @@ const ServiceGroup = ({ serviceType, data }) => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>{serviceType.name}</Text>
+        <Text style={{ ...styles.title }}>{serviceType.name}</Text>
         <TouchableOpacity
           onPress={() => handleSeeMore()}
           style={styles.seeMoreBtn}
@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     borderRadius: 10,
     marginBottom: 40,
+    width: "100%",
   },
   header: {
     flexDirection: "row",
@@ -52,25 +53,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
     padding: 10,
-    backgroundColor: "#254039",
-    borderRadius: 5,
-    width: "100%",
+    backgroundColor: "rgba(245, 222, 179, 0.35)",
+    borderRadius: 10,
+    width: "70%",
+    borderWidth: 2,
+    borderColor: "white",
+    position: "relative",
   },
   title: {
-    color: "#fff",
+    color: "#233375",
     fontSize: 16,
     fontWeight: "bold",
   },
   seeMoreBtn: {
-    borderWidth: 1,
-    borderColor: "#fff",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 20,
+    position: "absolute",
+    right: 7,
+    bottom: 5,
   },
   seeMoreText: {
-    color: "#fff",
-    fontSize: 14,
+    color: "black",
+    fontSize: 12,
     fontWeight: "bold",
   },
   card: {

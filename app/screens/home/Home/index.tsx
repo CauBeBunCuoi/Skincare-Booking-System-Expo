@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { BackHandler, Pressable, ScrollView, Text, View } from "react-native";
+import {
+  BackHandler,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { styles } from "./styles";
 import { Divider } from "react-native-paper";
@@ -7,11 +14,12 @@ import DividerUI from "@/components/ui/DividerUI";
 
 import TherapistCarousel from "./Widget/TherapistCarousel";
 import ServiceGroup from "./Widget/ServiceGroup";
-import { isLoaded } from "expo-font";
+import { isLoaded, useFonts } from "expo-font";
 import { useFocusEffect, useNavigation } from "expo-router";
 import { callApi } from "@/app/api/main/api_call/api";
 import { publicApi } from "@/app/api/instance/axiosInstance";
 import axios from "axios";
+import AppLoading from "expo-app-loading";
 
 // const serviceTypes = [
 //   { _id: 1, name: "Dermatological Treatment" },
@@ -289,10 +297,8 @@ const HomeScreen = () => {
   const isFocused = useIsFocused();
   const navigation = useNavigation();
 
-
   useFocusEffect(
     useCallback(() => {
-
       const backHandler = BackHandler.addEventListener(
         "hardwareBackPress",
         (): boolean => {
@@ -329,24 +335,24 @@ const HomeScreen = () => {
   };
 
   const setAttributes = async () => {
-
-
     const therapists = await callApi({
       instance: publicApi,
       method: "get",
       url: "/accounts/staffs",
-    })
+    });
     if (therapists.success) {
-
-      setTherapists(therapists.data.accounts.filter((therapist) => therapist.roleId === 3).slice(0, 4));
+      setTherapists(
+        therapists.data.accounts
+          .filter((therapist) => therapist.roleId === 3)
+          .slice(0, 4)
+      );
     }
-
 
     const serviceTypes = await callApi({
       instance: publicApi,
       method: "get",
       url: "/services/service-types",
-    })
+    });
     // console.log("\n\n\nALO\n\n\n\n");
     if (serviceTypes.success) {
       setServiceTypes(serviceTypes.data.serviceTypes);
@@ -356,12 +362,11 @@ const HomeScreen = () => {
       instance: publicApi,
       method: "get",
       url: "/services",
-    })
+    });
     if (services.success) {
       setServices(services.data.services);
     }
     setLoading(false);
-
   };
 
   const handleNavigateQuiz = () => {
@@ -371,13 +376,24 @@ const HomeScreen = () => {
   return (
     <ScrollView>
       <View style={styles.container}>
-        <Text style={styles.title}>Lumina Derma</Text>
-        <Text style={styles.subTitle}>
+        <Text
+          style={{
+            fontFamily: "PostNoBillBold",
+            fontSize: 40,
+            color: "#235347",
+            paddingVertical: 32,
+          }}
+        >
+          Lumina Derma
+        </Text>
+        <Text style={{ ...styles.subTitle, fontFamily: "PostNoBillLight" }}>
           Personalized skin therapy designed to nourish, heal, and illuminate
           your natural beauty.
         </Text>
         <View style={styles.quizContainer}>
-          <Text style={styles.quizTitle}>
+          <Text
+            style={{ ...styles.quizTitle, fontFamily: "PostNoBillRegular" }}
+          >
             Struggle In Finding Your Skin Services ?
           </Text>
           <Text style={styles.quizSubTitle}>
@@ -401,7 +417,15 @@ const HomeScreen = () => {
           <Text>Loading...</Text>
         ) : (
           <>
-            <Text style={styles.serviceGroupTitle}>Our Skin Services</Text>
+            <Text
+              style={{
+                fontFamily: "PostNoBillBold",
+                fontSize: 20,
+                color: "#0B2B26",
+              }}
+            >
+              Our Skin Services
+            </Text>
             <ServiceGroup
               serviceType={serviceTypes[0]}
               data={serviceGroup1}
@@ -433,4 +457,12 @@ const HomeScreen = () => {
   );
 };
 
+const testStyles = StyleSheet.create({
+  webTitle: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#8EB69B",
+    paddingVertical: 20,
+  },
+});
 export default HomeScreen;

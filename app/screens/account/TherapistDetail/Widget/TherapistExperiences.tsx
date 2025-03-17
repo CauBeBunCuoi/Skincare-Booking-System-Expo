@@ -6,10 +6,12 @@ const TherapistExperiences = ({ services }) => {
       {services.map((item, index) => (
         <View key={index} style={styles.content}>
           <MaterialIcons name="medical-services" size={24} color="#F9A80F" />
-          <Text style={styles.text}>
-            {item.experienceYears} years of experience in
+          <Text style={{ width: "90%" }} numberOfLines={1} ellipsizeMode="tail">
+            <Text style={styles.text}>
+              {item.experienceYears} years of experience in
+            </Text>
+            <Text style={styles.textService}> {item.name}</Text>
           </Text>
-          <Text style={styles.textService}> {item.name}</Text>
         </View>
       ))}
     </View>
@@ -17,6 +19,7 @@ const TherapistExperiences = ({ services }) => {
 };
 const styles = StyleSheet.create({
   container: {
+    marginVertical: 8,
     width: "90%",
     backgroundColor: "rgba(255, 255, 255, 0.86)", // Màu trắng với độ trong suốt 70%
     padding: 16,

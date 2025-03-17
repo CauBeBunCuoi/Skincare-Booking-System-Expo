@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Pressable,
 } from "react-native";
 import Modal from "react-native-modal";
 import { AntDesign } from "@expo/vector-icons";
@@ -55,15 +56,17 @@ const ResultPopup: React.FC<ResultPopupProps> = ({
     >
       <View style={styles.container}>
         {/* Nút đóng */}
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+        <Pressable style={styles.closeButton} onPress={onClose}>
           <AntDesign name="close" size={24} color="black" />
-        </TouchableOpacity>
+        </Pressable>
 
         {/* Thông tin Therapist */}
         <View style={styles.therapistInfo}>
           <Image
             source={{
-              uri : therapist ?  formatLocalHostImageUrl(therapist.imageUrl) : "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png",
+              uri: therapist
+                ? formatLocalHostImageUrl(therapist.imageUrl)
+                : "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png",
             }}
             style={styles.avatar}
           />
@@ -113,11 +116,15 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 20,
     alignItems: "center",
+    position: "relative",
   },
   closeButton: {
+    backgroundColor: "transparent",
+    padding: 10,
     position: "absolute",
-    top: 15,
-    right: 15,
+    top: 10,
+    right: 10,
+    zIndex: 999,
   },
   therapistInfo: {
     flexDirection: "row",

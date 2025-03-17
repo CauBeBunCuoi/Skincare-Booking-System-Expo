@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { ImageBackground, Text, View } from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { styles } from "./styles";
 import ServiceTypeCard from "./Widget/ServiceTypeCard";
@@ -70,29 +70,41 @@ const ServiceDiscoveryScreen = () => {
       setServiceTypes(serviceTypes.data.serviceTypes);
     }
     setLoading(false);
-
   };
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <Text style={styles.title}>Services</Text>
-        <Text style={styles.subTitle}>All Of Our Services</Text>
-        <Text style={styles.titleDescription}>
-          Our company offers a wide range of advanced skin treatment services,
-          utilizing cutting-edge technologies to deliver exceptional results.
-          With a commitment to innovation and excellence, we provide
-          personalized solutions for all skin types, ensuring safe, effective,
-          and transformative care. Experience the future of skincare with our
-          expert team and state-of-the-art treatments.
-        </Text>
-        {loading ? (
-          <Text style={{ marginVertical: 10 }}>Loading...</Text>
-        ) : (
-          <ServiceTypeGroups serviceTypes={serviceTypes} />
-        )}
-      </View>
-    </ScrollView>
+    <View style={{ flex: 1 }}>
+      <ImageBackground
+        source={require("@/assets/images/backgrounds/serviceGroups/main.jpg")}
+        style={styles.background}
+      />
+      <ScrollView>
+        <View style={styles.container}>
+          <Text style={{ ...styles.title, fontFamily: "PostNoBillBold" }}>
+            Services
+          </Text>
+          <Text style={styles.subTitle}>All Of Our Services</Text>
+          <Text
+            style={{
+              ...styles.titleDescription,
+              fontFamily: "PostNoBillSemiBold",
+            }}
+          >
+            Our company offers a wide range of advanced skin treatment services,
+            utilizing cutting-edge technologies to deliver exceptional results.
+            With a commitment to innovation and excellence, we provide
+            personalized solutions for all skin types, ensuring safe, effective,
+            and transformative care. Experience the future of skincare with our
+            expert team and state-of-the-art treatments.
+          </Text>
+          {loading ? (
+            <Text style={{ marginVertical: 10 }}>Loading...</Text>
+          ) : (
+            <ServiceTypeGroups serviceTypes={serviceTypes} />
+          )}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 

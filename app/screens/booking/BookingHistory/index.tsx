@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Button,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useIsFocused } from "@react-navigation/native";
 import { styles } from "./styles";
 import BookingGroup from "./Widget/BookingGroup";
@@ -505,7 +512,7 @@ const BookingHistoryScreen = () => {
       instance: publicApi,
       method: "get",
       url: `/bookings/accounts/${user._id}`,
-    })
+    });
     setBookings(bookingHistory.data.bookings);
   };
 
@@ -539,64 +546,90 @@ const BookingHistoryScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Booking History</Text>
-      {!loading ? (
-        <>
-          <View style={styles.tabContainer}>
-            <TouchableOpacity onPress={() => setShowingGroup("comingUpGroup")}>
-              <Text
-                style={
-                  showingGroup === "comingUpGroup"
-                    ? [styles.tabButton, styles.comingUpTab, styles.tabActive]
-                    : [styles.tabButton, styles.comingUpTab]
-                }
+    <View style={{ flex: 1 }}>
+      <ImageBackground
+        source={require("@/assets/images/backgrounds/bookingHistory/main.jpg")}
+        style={styles.background}
+      />
+      <View style={styles.container}>
+        <Text style={{ ...styles.title, fontFamily: "PostNoBillBold" }}>
+          Booking History
+        </Text>
+        {!loading ? (
+          <>
+            <View style={styles.tabContainer}>
+              <TouchableOpacity
+                onPress={() => setShowingGroup("comingUpGroup")}
               >
-                Coming Up
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setShowingGroup("completedGroup")}>
-              <Text
-                style={
-                  showingGroup === "completedGroup"
-                    ? [styles.tabButton, styles.completedTab, styles.tabActive]
-                    : [styles.tabButton, styles.completedTab]
-                }
+                <Text
+                  style={
+                    showingGroup === "comingUpGroup"
+                      ? [
+                          styles.tabButton,
+                          styles.comingUpTab,
+                          styles.tabComingActive,
+                        ]
+                      : [styles.tabButton, styles.comingUpTab]
+                  }
+                >
+                  Coming Up
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setShowingGroup("completedGroup")}
               >
-                Completed
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setShowingGroup("cancelledGroup")}>
-              <Text
-                style={
-                  showingGroup === "cancelledGroup"
-                    ? [styles.tabButton, styles.cancelledTab, styles.tabActive]
-                    : [styles.tabButton, styles.cancelledTab]
-                }
+                <Text
+                  style={
+                    showingGroup === "completedGroup"
+                      ? [
+                          styles.tabButton,
+                          styles.completedTab,
+                          styles.tabCompleteActive,
+                        ]
+                      : [styles.tabButton, styles.completedTab]
+                  }
+                >
+                  Completed
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setShowingGroup("cancelledGroup")}
               >
-                Cancelled
-              </Text>
-            </TouchableOpacity>
-          </View>
-          {showingGroup === "comingUpGroup" && (
-            <ScrollView style={styles.bookingList}>
-              <BookingGroup group={comingUpGroup} />
-            </ScrollView>
-          )}
-          {showingGroup === "completedGroup" && (
-            <ScrollView style={styles.bookingList}>
-              <BookingGroup group={completedGroup} />
-            </ScrollView>
-          )}
-          {showingGroup === "cancelledGroup" && (
-            <ScrollView style={styles.bookingList}>
-              <BookingGroup group={cancelledGroup} />
-            </ScrollView>
-          )}
-        </>
-      ) : (
-        <Text>Loading...</Text>
-      )}
+                <Text
+                  style={
+                    showingGroup === "cancelledGroup"
+                      ? [
+                          styles.tabButton,
+                          styles.cancelledTab,
+                          styles.tabCancelActive,
+                        ]
+                      : [styles.tabButton, styles.cancelledTab]
+                  }
+                >
+                  Cancelled
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {showingGroup === "comingUpGroup" && (
+              <ScrollView style={styles.bookingList}>
+                <BookingGroup group={comingUpGroup} />
+              </ScrollView>
+            )}
+            {showingGroup === "completedGroup" && (
+              <ScrollView style={styles.bookingList}>
+                <BookingGroup group={completedGroup} />
+              </ScrollView>
+            )}
+            {showingGroup === "cancelledGroup" && (
+              <ScrollView style={styles.bookingList}>
+                <BookingGroup group={cancelledGroup} />
+              </ScrollView>
+            )}
+          </>
+        ) : (
+          <Text>Loading...</Text>
+        )}
+      </View>
     </View>
   );
 };

@@ -10,9 +10,19 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  background: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+  },
   title: {
-    fontSize: 24,
-    paddingVertical: 10,
+    fontSize: 40,
+    paddingTop: 40,
+    color: "white",
     fontWeight: "bold",
   },
   tabContainer: {
@@ -20,29 +30,46 @@ export const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "space-around",
     flexDirection: "row",
-    paddingVertical: 10,
+    paddingTop: 10,
+    paddingBottom: 20,
   },
   tabButton: {
     padding: 10,
     borderRadius: 10,
     width: w / 4,
     alignItems: "center",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
     color: "white",
+    fontFamily: "PostNoBillBold",
     textAlign: "center",
   },
   comingUpTab: {
-    backgroundColor: "#5F89AF",
+    backgroundColor: "rgba(75,121, 241, 0.2)",
+    borderWidth: 1,
+    borderColor: "#5468B7",
   },
   completedTab: {
-    backgroundColor: "#28413B",
+    backgroundColor: "rgba(119,149, 113, 0.2)",
+    borderWidth: 1,
+    borderColor: "#779571",
   },
   cancelledTab: {
-    backgroundColor: "#A51723",
+    backgroundColor: "rgba(243,39, 39, 0.2)",
+    borderWidth: 1,
+    borderColor: "#F32727",
   },
   tabActive: {
     color: "#F9A80F",
+  },
+  tabComingActive: {
+    color: "#5468B7",
+  },
+  tabCompleteActive: {
+    color: "#C1D6B7",
+  },
+  tabCancelActive: {
+    color: "#F32727",
   },
   bookingList: {
     width: w,
@@ -51,5 +78,6 @@ export const styles = StyleSheet.create({
     // alignItems: "center",
     // justifyContent: "center",
     paddingHorizontal: 20,
+    marginBottom: 90,
   },
 });

@@ -1,24 +1,40 @@
 import { formatLocalHostImageUrl } from "@/app/tool/ImageUrlHelper";
+import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { Dimensions } from "react-native";
 
+const w = Dimensions.get("window").width;
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat("vi-VN").format(amount) + " VND";
+};
 const ServiceListCard = ({ service, onPress }) => {
   return (
     <View style={styles.card}>
       {/* Hình ảnh dịch vụ */}
-      <Image style={styles.image} source={{ uri: formatLocalHostImageUrl(service.imageUrl) }} />
+      <Image
+        style={styles.image}
+        source={{ uri: formatLocalHostImageUrl(service.imageUrl) }}
+      />
 
       {/* Nội dung dịch vụ */}
-      <View style={styles.content}>
-        <Text style={styles.title}>{service.name}</Text>
+      <LinearGradient
+        colors={["#617BE229", "#F9A80F29"]} // Thêm '29' để đặt opacity = 16%
+        style={styles.content}
+      >
+        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.title}>
+          {service.name}
+        </Text>
         <Text style={styles.duration}>{service.duration} hours</Text>
-        <Text style={styles.description}>{service.description}</Text>
+        <Text numberOfLines={3} ellipsizeMode="tail" style={styles.description}>
+          {service.description}
+        </Text>
 
         {/* Giá và nút đặt lịch */}
         <View style={styles.footer}>
           <View style={styles.priceContainer}>
             <Text style={styles.priceLabel}>Price:</Text>
-            <Text style={styles.price}>{service.fee} VND</Text>
+            <Text style={styles.price}>{formatCurrency(service.fee)}</Text>
           </View>
           <TouchableOpacity
             style={styles.button}
@@ -27,7 +43,7 @@ const ServiceListCard = ({ service, onPress }) => {
             <Text style={styles.buttonText}>Booking Now</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </LinearGradient>
     </View>
   );
 };
@@ -35,23 +51,31 @@ const ServiceListCard = ({ service, onPress }) => {
 // **Styles**
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    backgroundColor: "rgba(255, 255, 255, 0.28)",
     borderRadius: 15,
+    alignItems: "center",
     overflow: "hidden",
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
-    width: 180,
+    width: w * 0.44,
     marginBottom: 20,
-    padding: 16,
   },
   image: {
-    width: 150,
-    height: 117,
+    width: w * 0.36,
+    height: w * 0.3,
+    borderRadius: 15,
+    margin: 10,
   },
   content: {
     padding: 0,
+    paddingVertical: 16,
+    paddingHorizontal: 5,
+    width: "100%",
+    height: w * 0.3,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   title: {
     fontSize: 14,
@@ -59,20 +83,22 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   duration: {
-    fontSize: 14,
-    color: "#888",
+    fontSize: 12,
+    color: "white",
     marginBottom: 5,
   },
   description: {
     fontSize: 10,
+    height: w * 0.08,
+    width: "95%",
     color: "#666",
-    marginBottom: 10,
   },
   footer: {
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "space-between",
-    marginTop: 10,
+    marginTop: 5,
+    paddingHorizontal: 5,
     gap: 5,
   },
   priceContainer: {
@@ -83,7 +109,7 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   price: {
-    fontSize: 8,
+    fontSize: 10,
     fontWeight: "bold",
     color: "#FFA500",
   },

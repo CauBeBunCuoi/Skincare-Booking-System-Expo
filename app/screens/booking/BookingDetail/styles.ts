@@ -2,7 +2,40 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   header: {},
-  container: {},
+  container: {
+    alignItems: "center",
+    flex: 1,
+  },
+  background: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: "100%",
+    height: "100%",
+  },
+  titleContainer: {
+    marginTop: 20,
+    width: "90%",
+    padding: 30,
+    borderWidth: 3,
+    borderColor: "white",
+    borderRadius: 10,
+    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    alignItems: "center",
+  },
+  titleContainerText: {
+    fontSize: 30,
+    color: "white",
+    fontFamily: "PostNoBillBold",
+  },
+  titleContainerTextId: {
+    fontSize: 20,
+    color: "white",
+    fontFamily: "PostNoBillBold",
+    marginTop: 10,
+  },
   resultButton: {
     marginVertical: 20,
     alignItems: "center",

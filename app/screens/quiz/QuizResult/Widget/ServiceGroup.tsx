@@ -27,13 +27,20 @@ const ServiceGroup = ({ data }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>{serviceGroup.serviceType.name}</Text>
+        <View style={styles.headerDot}></View>
+        <Text style={{ ...styles.title, fontFamily: "PostNoBillBold" }}>
+          {serviceGroup.serviceType.name}
+        </Text>
       </View>
 
       <ServiceSimpleCarousel services={serviceGroup.services} />
 
       <View style={styles.serviceGroupDescriptions}>
-        <Text style={styles.serviceGroupDescriptionContent}>
+        <Text
+          numberOfLines={3}
+          ellipsizeMode="tail"
+          style={styles.serviceGroupDescriptionContent}
+        >
           {serviceGroup.serviceType.description}
         </Text>
       </View>
@@ -44,23 +51,27 @@ const ServiceGroup = ({ data }) => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    height: 500,
     backgroundColor: "transparent",
     borderRadius: 10,
     marginBottom: 20,
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
     padding: 10,
-    backgroundColor: "#254039",
     borderRadius: 5,
+    gap: 5,
+  },
+  headerDot: {
+    width: 10,
+    height: 30,
+    backgroundColor: "#6D3B13",
+    marginRight: 10,
   },
   title: {
-    color: "#fff",
-    fontSize: 12,
+    color: "#6D3B13",
+    fontSize: 19,
     fontWeight: "bold",
   },
   seeMoreBtn: {
@@ -112,15 +123,16 @@ const styles = StyleSheet.create({
   serviceGroupDescriptions: {
     marginTop: 5,
     padding: 3,
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    backgroundColor: "rgba(255, 255, 255, 0.35)",
     borderRadius: 5,
     alignContent: "center",
   },
 
   serviceGroupDescriptionContent: {
     fontSize: 16,
+    padding: 10,
     color: "#000",
-    textAlign: "center",
+    textAlign: "justify",
   },
 });
 

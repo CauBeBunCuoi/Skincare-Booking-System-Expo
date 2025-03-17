@@ -14,10 +14,18 @@ const images = {
   "8": require("@/assets/images/bookingHistory/8.jpg"),
 };
 
-const formatDate = (dateString) => {
-  const [year, month, day] = dateString.split("-");
+function formatDate(input) {
+  const date = new Date(input); // Chuyển chuỗi thành Date object
+
+  if (isNaN(date.getTime())) return "Invalid date format"; // Kiểm tra lỗi
+
+  const day = String(date.getDate()).padStart(2, "0"); // Lấy ngày (DD)
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Lấy tháng (MM)
+  const year = date.getFullYear(); // Lấy năm (YYYY)
+
   return `${day}/${month}/${year}`;
-};
+}
+
 const formatTime = (timeString) => {
   const date = new Date(timeString);
   let hours = date.getHours();
@@ -61,28 +69,42 @@ const BookingCard = ({ item }) => {
       />
       <View style={styles.bookingInformationsContainer}>
         <Text style={styles.idText}>{item.service.name}</Text>
-        <Text style={styles.normalText}>
-          Date: {formatTime(item.booking.appointmentTime)} -{" "}
-          {formatDate(item.booking.bookingDate)}
-        </Text>
-        <Text style={styles.normalText}>
-          Check-in Time: {formatTime(item.booking.checkInTime)}
-        </Text>
-        <Text style={styles.normalText}>
-          Total Fee: {formatMoney(item.booking.totalFee)}
-        </Text>
-        {item.therapist ? (
-          <Text style={styles.normalText}>
-            Therapist: {item.therapist.fullName}
+        <View style={styles.singleRowInformation}>
+          <Text style={styles.headerInformationText}>Date:</Text>
+          <Text style={styles.contentInformationText}>
+            {formatTime(item.booking.appointmentTime)} -{" "}
+            {formatDate(item.booking.appointmentTime)}
           </Text>
+        </View>
+        <View style={styles.singleRowInformation}>
+          <Text style={styles.headerInformationText}>Check-in Time:</Text>
+          <Text style={styles.contentInformationText}>
+            {formatTime(item.booking.checkInTime)}
+          </Text>
+        </View>
+        <View style={styles.singleRowInformation}>
+          <Text style={styles.headerInformationText}>Total Fee:</Text>
+          <Text style={styles.contentInformationFee}>
+            {formatMoney(item.booking.totalFee)}
+          </Text>
+        </View>
+        {item.therapist ? (
+          <View style={styles.singleRowInformation}>
+            <Text style={styles.headerInformationText}>Therapist:</Text>
+            <Text style={styles.contentInformationText}>
+              {item.therapist.fullName}
+            </Text>
+          </View>
         ) : (
-          <Text style={styles.normalText}>Therapist: Not assigned</Text>
+          <View style={styles.singleRowInformation}>
+            <Text style={styles.headerInformationText}>Therapist:</Text>
+            <Text style={styles.contentInformationTextNotYet}>
+              Not Assigned Yet
+            </Text>
+          </View>
         )}
         {item.bookingStatus._id <= 4 && (
-          <Text style={styles.noteText}>
-            (The treatment will be happens soon, please remember to to be on
-            time !)
-          </Text>
+          <Text style={styles.noteText}>(Will Happens Soon !)</Text>
         )}
       </View>
     </TouchableOpacity>
@@ -95,7 +117,7 @@ const styles = StyleSheet.create({
     height: 150,
     display: "flex",
     flexDirection: "row",
-    backgroundColor: "rgba(217, 217, 217, 0.8)",
+    backgroundColor: "rgba(217, 217, 217, 0.5)",
     marginBottom: 10,
     borderRadius: 20,
   },
@@ -106,6 +128,33 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     paddingLeft: 2,
   },
+  singleRowInformation: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "77%",
+  },
+  headerInformationText: {
+    fontWeight: "bold",
+    fontSize: 11,
+    color: "#D9D9D9",
+  },
+  contentInformationText: {
+    fontWeight: "bold",
+    fontSize: 11,
+    color: "black",
+  },
+  contentInformationFee: {
+    fontWeight: 800,
+    fontSize: 11,
+    color: "#F9A80F",
+  },
+  contentInformationTextNotYet: {
+    fontWeight: 800,
+    fontSize: 11,
+    color: "white",
+  },
   idText: {
     fontSize: 16,
     fontWeight: "bold",
@@ -114,7 +163,7 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   noteText: {
-    fontSize: 6,
+    fontSize: 9,
     fontStyle: "italic",
     color: "red",
   },

@@ -6,10 +6,16 @@ const TherapistExperiences = ({ services }) => {
       {services.map((item, index) => (
         <View key={index} style={styles.content}>
           <MaterialIcons name="medical-services" size={24} color="#F9A80F" />
-          <Text style={styles.text}>
-            {item.experienceYears} years of experience in
+          <Text
+            style={{ width: "90%", paddingLeft: 2 }}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            <Text style={styles.text}>
+              {item.experienceYears} years of experience in
+            </Text>
+            <Text style={styles.textService}> {item.name}</Text>
           </Text>
-          <Text style={styles.textService}> {item.name}</Text>
         </View>
       ))}
     </View>

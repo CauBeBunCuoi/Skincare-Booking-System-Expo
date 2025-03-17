@@ -14,7 +14,11 @@ interface BasicInformationsProps {
 const dateFromIsoString = (isoString: string) => {
   const date = new Date(isoString);
   return date.toLocaleDateString();
-}
+};
+
+const formatMoney = (amount) => {
+  return amount.toLocaleString("vi-VN") + " VND";
+};
 
 const BasicInformations: React.FC<BasicInformationsProps> = ({
   id,
@@ -27,14 +31,6 @@ const BasicInformations: React.FC<BasicInformationsProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.row}>
-        <FontAwesome5 name="id-card" size={16} color="black" />
-        <Text style={styles.label}> ID</Text>
-        <Text style={styles.value}>{id}</Text>
-      </View>
-
-      <View style={styles.separator} />
-
-      <View style={styles.row}>
         <FontAwesome5 name="briefcase-medical" size={16} color="black" />
         <Text style={styles.label}> Service Name</Text>
         <Text style={styles.value}>{serviceName}</Text>
@@ -45,7 +41,7 @@ const BasicInformations: React.FC<BasicInformationsProps> = ({
       <View style={styles.row}>
         <FontAwesome5 name="dollar-sign" size={16} color="black" />
         <Text style={styles.label}> Total Fee</Text>
-        <Text style={styles.value}>${totalFee}</Text>
+        <Text style={styles.value}>{formatMoney(totalFee)}</Text>
       </View>
 
       <View style={styles.separator} />
@@ -57,7 +53,6 @@ const BasicInformations: React.FC<BasicInformationsProps> = ({
           <Text style={styles.value}>{therapist.fullName}</Text>
         ) : (
           <Text style={styles.value}>Not assigned</Text>
-
         )}
       </View>
       <View style={styles.separator} />
@@ -95,7 +90,7 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 14,
-    color: "#8EB69B",
+    color: "white",
     fontWeight: "600",
   },
   separator: {

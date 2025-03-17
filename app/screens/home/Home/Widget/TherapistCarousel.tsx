@@ -279,7 +279,7 @@ const TherapistCarousel = ({ data }) => {
 
   return (
     <SafeAreaView>
-      <View>
+      <View style={{ paddingHorizontal: 3 }}>
         <Carousel
           ref={(carouselRef) => {
             if (carouselRef) ref.current = carouselRef;
@@ -306,25 +306,19 @@ const TherapistCarousel = ({ data }) => {
                     style={styles.card}
                   >
                     <Image
-                      source={{ uri: formatLocalHostImageUrl(therapist.imageUrl)}}
+                      source={{
+                        uri: formatLocalHostImageUrl(therapist.imageUrl),
+                      }}
                       style={styles.image}
                     />
                     <View style={styles.content}>
-                      <Text style={styles.title}>{therapist.fullName}</Text>
+                      <Text style={styles.title}>Dr.{therapist.fullName}</Text>
                     </View>
                   </Pressable>
                 </View>
               ))}
             </View>
           )}
-        />
-
-        <Pagination.Basic
-          progress={progress}
-          data={groupedData}
-          dotStyle={{ backgroundColor: "rgba(0,0,0,0.2)", borderRadius: 50 }}
-          containerStyle={{ gap: 5, marginTop: 10 }}
-          onPress={onPressPagination}
         />
       </View>
     </SafeAreaView>
@@ -336,6 +330,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: width,
+    paddingHorizontal: 5,
   },
   cardContainer: {
     width: width / 3.5,
@@ -343,8 +338,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: "100%",
-    backgroundColor: "#fff",
-    borderRadius: 10,
+    backgroundColor: "#F1ECE6",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,

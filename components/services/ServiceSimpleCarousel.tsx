@@ -6,6 +6,7 @@ const ServiceSimpleCarousel = ({ services }) => {
     <View style={styles.container}>
       <FlatList
         data={services}
+        style={{ paddingVertical: 10 }}
         horizontal
         showsHorizontalScrollIndicator={false}
         // keyExtractor={(item) => item._id.toString()}
