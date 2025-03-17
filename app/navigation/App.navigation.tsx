@@ -17,7 +17,7 @@ import {
   ServiceDiscoveryScreen,
   ServiceListScreen,
 } from "../screens/service";
-import { BookingDetailScreen, BookingHistoryScreen } from "../screens/booking";
+import { BookingDetailScreen, BookingHistoryScreen, QuickBookingScreen } from "../screens/booking";
 import { LoginScreen, RegisterScreen } from "../screens/auth";
 import { QuizResultScreen, QuizScreen } from "../screens/quiz";
 
@@ -105,6 +105,29 @@ const ServicesStackScreen = ({ navigation }) => {
         component={BookingDetailScreen}
       />
     </ServicesStack.Navigator>
+  );
+};
+
+// Quick Function Stack
+const QuickFunctionStack = createNativeStackNavigator();
+const QuickFunctionStackScreen = ({ navigation }) => {
+  useFocusEffect(
+    useCallback(() => {
+      navigation.navigate("QUICKFUNCTION", { screen: "QuickBooking" });
+      return () => {};
+    }, [])
+  );
+  return (
+    <QuickFunctionStack.Navigator
+      id={null}
+      initialRouteName="QuickBooking"
+      screenOptions={{ headerShown: false }}
+    >
+      <QuickFunctionStack.Screen
+        name="QuickBooking"
+        component={QuickBookingScreen}
+      />
+    </QuickFunctionStack.Navigator>
   );
 };
 
@@ -228,6 +251,17 @@ export const AppBottomNavigation = () => {
           tabBarLabel: "Discovery",
           tabBarIcon: ({ color, size }) => {
             return <Icon name="magnify" size={size} color={color} />;
+          },
+          tabBarShowLabel: true,
+        }}
+      />
+      <BottomNavigation.Screen
+        name="QUICKFUNCTION"
+        component={QuickFunctionStackScreen}
+        options={{
+          tabBarLabel: "Quick Book",
+          tabBarIcon: ({ color, size }) => {
+            return <Icon name="calendar-plus" size={size} color={color} />;
           },
           tabBarShowLabel: true,
         }}
