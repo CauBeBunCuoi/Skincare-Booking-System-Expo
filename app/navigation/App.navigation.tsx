@@ -17,9 +17,14 @@ import {
   ServiceDiscoveryScreen,
   ServiceListScreen,
 } from "../screens/service";
-import { BookingDetailScreen, BookingHistoryScreen, QuickBookingScreen } from "../screens/booking";
+import {
+  BookingDetailScreen,
+  BookingHistoryScreen,
+  QuickBookingScreen,
+} from "../screens/booking";
 import { LoginScreen, RegisterScreen } from "../screens/auth";
 import { QuizResultScreen, QuizScreen } from "../screens/quiz";
+import { View } from "react-native";
 
 // Home Stack
 const HomeStack = createNativeStackNavigator();
@@ -259,9 +264,9 @@ export const AppBottomNavigation = () => {
         name="QUICKFUNCTION"
         component={QuickFunctionStackScreen}
         options={{
-          tabBarLabel: "Quick Book",
+          tabBarLabel: "Booking",
           tabBarIcon: ({ color, size }) => {
-            return <Icon name="calendar-plus" size={size} color={color} />;
+            return <Icon name="calendar-plus" size={25} color={color} />;
           },
           tabBarShowLabel: true,
         }}
