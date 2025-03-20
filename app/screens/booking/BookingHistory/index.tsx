@@ -555,7 +555,7 @@ const BookingHistoryScreen = () => {
   const filterGroup = (bookingList, name) => {
     const statusGroups = {
       comingUp: [1, 2, 3, 4],
-      completed: [5, 6],
+      completed: [6],
       cancelled: [7],
     };
 
