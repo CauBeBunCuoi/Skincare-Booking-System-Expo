@@ -13,6 +13,9 @@ import { styles } from "./styles";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import PhoneInput from "react-native-phone-number-input";
+import { callApi } from "@/app/api/main/api_call/api";
+import { publicApi } from "@/app/api/instance/axiosInstance";
+import { successAlert } from "@/utils/alert.util";
 
 const RegisterScreen = () => {
   // STATES
@@ -35,7 +38,7 @@ const RegisterScreen = () => {
     // setAttributes();
   }, [isFocused]);
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!validate()) return;
 
     setError(""); // Reset lỗi nếu hợp lệ
@@ -49,7 +52,20 @@ const RegisterScreen = () => {
       fullName,
     };
 
-    console.log("formData", formData);
+    const response = await callApi({
+      instance: publicApi,
+      method: "post",
+      url: "/accounts/register",
+      data: {
+        account: formData,
+        imageBase64: "abc",
+      },
+    });
+
+    if (response.success) {
+      successAlert("Đăng ký thành công, chào mừng bạn đến với Lumina Derma!");
+      navigate.navigate("Login");
+    }
   };
 
   const handleForgotPassword = () => {
@@ -182,7 +198,6 @@ const RegisterScreen = () => {
               <TextInput
                 style={styles.formInputContent}
                 placeholder="Your Email"
-                secureTextEntry={true}
                 value={email}
                 onChangeText={(text) => setEmail(text)}
               />

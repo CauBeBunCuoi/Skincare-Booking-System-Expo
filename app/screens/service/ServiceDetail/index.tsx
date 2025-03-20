@@ -20,6 +20,8 @@ import { formatLocalHostImageUrl } from "@/app/tool/ImageUrlHelper";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import DividerUI from "@/components/ui/DividerUI";
+import { asyncStorage_getByKey } from "@/app/tool/AsyncStorage";
+import { loginRequiredAlert } from "@/utils/alert.util";
 // const data = {
 //   service: {
 //     _id: "1abc",
@@ -180,7 +182,14 @@ const ServiceDetailScreen = () => {
     navigation.setOptions({ title: `${service.data.service.name}` });
   };
 
-  const handleOpenPopUp = () => {
+  const handleOpenPopUp = async () => {
+    // Check User Login
+    const account = await asyncStorage_getByKey("auth");
+    if (!account || !account.user) {
+      console.log("❌ Không tìm thấy thông tin tài khoản, cần đăng nhập");
+      loginRequiredAlert(navigation);
+      return;
+    }
     setPopupVisible(true);
   };
   const handleClosePopUp = () => {
@@ -303,6 +312,7 @@ const ServiceDetailScreen = () => {
             </Pressable>
 
             <SchedulePopup
+              screenNavigation={navigation}
               visible={popupVisible}
               service={service}
               therapists={therapists}

@@ -22,6 +22,8 @@ import TherapistSelectionPopup from "./TherapistSelectionPopup";
 import { callApi } from "@/app/api/main/api_call/api";
 import { loginRequiredApi, publicApi } from "@/app/api/instance/axiosInstance";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { loginRequiredAlert } from "@/utils/alert.util";
+import { asyncStorage_getByKey } from "@/app/tool/AsyncStorage";
 
 const scheduleList = [
   {
@@ -134,6 +136,7 @@ function formatSingleTime(time) {
 }
 
 const SchedulePopup = ({
+  screenNavigation,
   visible,
   service,
   selectedTherapist,
@@ -267,33 +270,37 @@ const SchedulePopup = ({
   };
 
   const handleConfirm = async () => {
-    // GỌI API Ở ĐÂY ĐỂ BOOKING
-    console.log("Booking Successfully, Details: ", finalBookingDetails);
-    finalBookingDetails.isAssigned =
-      selectedTherapist._id === "randomTherapist" ? false : true;
-    finalBookingDetails.assignedTherapistId =
-      selectedTherapist._id === "randomTherapist"
-        ? null
-        : selectedTherapist._id;
-    const book = await callApi({
-      instance: loginRequiredApi,
-      method: "post",
-      url: "/bookings",
-      data: finalBookingDetails,
-    });
-    if (book.success) {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "BOOKING", params: { screen: "BookingHistory" } }],
+    try {
+      // GỌI API Ở ĐÂY ĐỂ BOOKING
+      console.log("Booking Successfully, Details: ", finalBookingDetails);
+      finalBookingDetails.isAssigned =
+        selectedTherapist._id === "randomTherapist" ? false : true;
+      finalBookingDetails.assignedTherapistId =
+        selectedTherapist._id === "randomTherapist"
+          ? null
+          : selectedTherapist._id;
+      const book = await callApi({
+        instance: loginRequiredApi,
+        method: "post",
+        url: "/bookings",
+        data: finalBookingDetails,
       });
-      onClose();
-    } else {
-      Alert.alert("Booking Failed", "Please try again later", [
-        {
-          text: "OK",
-          onPress: () => console.log("OK Pressed"),
-        },
-      ]);
+      if (book.success) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "BOOKING", params: { screen: "BookingHistory" } }],
+        });
+        onClose();
+      } else {
+        Alert.alert("Booking Failed", "Please try again later", [
+          {
+            text: "OK",
+            onPress: () => console.log("OK Pressed"),
+          },
+        ]);
+      }
+    } catch (error) {
+      console.log("❌ Lỗi khi lấy thông tin tài khoản:", error);
     }
   };
 
@@ -409,9 +416,7 @@ const SchedulePopup = ({
                   return (
                     <View style={styles.dropdownButtonStyle}>
                       <Text style={styles.dropdownButtonTxtStyle}>
-                        {schedules.length > 0
-                          ? schedules[0].date
-                          : "No available date"}
+                        {selectedDate ? selectedDate.date : "No available date"}
                       </Text>
                       <Icon
                         name={isOpened ? "chevron-up" : "chevron-down"}
@@ -440,18 +445,24 @@ const SchedulePopup = ({
 
               {/* Hiển thị danh sách giờ tương ứng */}
               {selectedDate ? (
-                <View style={{ width: "100%" }}>
-                  <FlatList
-                    data={selectedDate.hours}
-                    numColumns={3}
-                    keyExtractor={(item) => item}
-                    renderItem={({ item }) => (
-                      <Pressable onPress={() => handleBooking(item)}>
-                        <HourCard selectedTime={selectedTime} time={item} />
-                      </Pressable>
-                    )}
-                  />
-                </View>
+                <>
+                  {selectedDate.hours.length > 0 ? (
+                    <View style={{ width: "100%" }}>
+                      <FlatList
+                        data={selectedDate.hours}
+                        numColumns={3}
+                        keyExtractor={(item) => item}
+                        renderItem={({ item }) => (
+                          <Pressable onPress={() => handleBooking(item)}>
+                            <HourCard selectedTime={selectedTime} time={item} />
+                          </Pressable>
+                        )}
+                      />
+                    </View>
+                  ) : (
+                    <Text style={styles.noHours}>No available hours</Text>
+                  )}
+                </>
               ) : (
                 <View style={styles.noDateContainer}>
                   <FontAwesome5 name="sad-tear" size={40} color="#555" />

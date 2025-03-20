@@ -5,9 +5,13 @@ import { styles } from "./styles";
 import { Pressable } from "react-native-gesture-handler";
 import { useNavigation } from "expo-router";
 import { IconButton, TextInput } from "react-native-paper";
-import { asyncStorage_getByKey } from "@/app/tool/AsyncStorage";
+import {
+  asyncStorage_getByKey,
+  asyncStorage_initStorage,
+} from "@/app/tool/AsyncStorage";
 import { callApi } from "@/app/api/main/api_call/api";
 import { loginRequiredApi } from "@/app/api/instance/axiosInstance";
+import { loginRequiredAlert } from "@/utils/alert.util";
 
 const data = {
   _id: "1",
@@ -54,24 +58,34 @@ const AccountProfileScreen = () => {
 
   // FUNCTIONS
   const setAttributes = async () => {
-    // Call API to get user profile
-    const auth = await asyncStorage_getByKey("auth");
+    try {
+      // Check Login
+      const account = await asyncStorage_getByKey("auth");
+      if (!account || !account.user) {
+        console.log("❌ Không tìm thấy thông tin tài khoản, cần đăng nhập");
+        loginRequiredAlert(navigation);
+      }
 
-    const user = auth.user;
-    setUser(user);
+      // Lấy thông tin tài khoản
+      setUser(account.user);
 
-    const bookingHistory = await callApi({
-      instance: loginRequiredApi,
-      method: "get",
-      url: `/bookings/accounts/${user._id}`,
-    });
-    if (bookingHistory.success) {
-      setBookings(bookingHistory.data.bookings);
+      const bookingHistory = await callApi({
+        instance: loginRequiredApi,
+        method: "get",
+        url: `/bookings/accounts/${account.user._id}`,
+      });
+      if (bookingHistory.success) {
+        setBookings(bookingHistory.data.bookings);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.log("❌ Lỗi khi lấy thông tin tài khoản:", error);
     }
-    setLoading(false);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // Xóa token
+    await asyncStorage_initStorage("auth", null);
     navigation.reset({
       index: 0,
       routes: [{ name: "AUTH", params: { screen: "Login" } }],

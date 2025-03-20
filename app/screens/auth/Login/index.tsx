@@ -12,6 +12,10 @@ import { useIsFocused } from "@react-navigation/native";
 import { styles } from "./styles";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
+import { callApi } from "@/app/api/main/api_call/api";
+import { publicApi } from "@/app/api/instance/axiosInstance";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { jwtDecode } from "jwt-decode";
 
 const LoginScreen = () => {
   // STATES
@@ -27,14 +31,34 @@ const LoginScreen = () => {
     // setAttributes();
   }, [isFocused]);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
       setError("Username và Password không được để trống!");
       return;
     }
     setError(""); // Reset lỗi nếu hợp lệ
-    console.log("Đăng nhập thành công với:", { username, password });
-    // Thực hiện logic đăng nhập ở đây...
+    const response = await callApi({
+      instance: publicApi,
+      method: "post",
+      url: "/accounts/login",
+      data: {
+        username: username,
+        password: password,
+      },
+    });
+    if (response.success) {
+      // Lấy token và bỏ chữ "Bearer "
+      const token = response.data.token.replace("Bearer ", "");
+
+      // Giải mã token để lấy user
+      const user = jwtDecode(token);
+
+      // Lưu vào AsyncStorage
+      await AsyncStorage.setItem("auth", JSON.stringify({ token, user }));
+
+      // Chuyển hướng về trang HOME
+      navigate.navigate("HOME");
+    }
   };
 
   const handleForgotPassword = () => {

@@ -1,6 +1,7 @@
 import {
   DarkTheme,
   DefaultTheme,
+  NavigationContainer,
   ThemeProvider,
   useRoute,
 } from "@react-navigation/native";
@@ -28,8 +29,8 @@ import { jwtDecode } from "jwt-decode";
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-const token =
-  "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2IwYTQxNDQ0Nzg4M2U1ZmE4MGY4YjIiLCJ1c2VybmFtZSI6ImJiIiwiZnVsbE5hbWUiOiJIw6BvIG7DqCIsImVtYWlsIjoiaGFuZ3V5ZW5oYW9vby4yMGFwcmlsQGdtYWlsLmNvbSIsInBob25lTnVtYmVyIjoxMjMxMjMxMjMxMjMsInJvbGVJZCI6MSwiaWF0IjoxNzQyMTk4ODIzLCJleHAiOjE3NDIyODUyMjN9.LA95gBqklqzGe99V39YV_JoJIdjJtdQcdf_EtWHXZ02LHIKzXcSN8cwbBKKxxfDe3uYbFu3I2GFh0QMEd4XD17Hrg6ooyLJCCxtZTbqnVHSl395GJ98b7_WGlFaUl_OFze9zmnoScNnJnjOlBVnNY-q8cD9Fafgo4w_9DoxZPjqnyC_sLJVRdqnUl_0S-Guyzq2d1EQH6ye3_4AXltQfuzD-H5mWp0z3XIpxhP4W_3OeH5v1mMurz4NrBhiNjpuGVdQw3s_gSLD_3mq-L51F28nz4yhEVZvKbsU9appwEvN43MyyEnGKoPEOF3BBWZhBfv9KpQQB8hR9ReGZHJRUVA";
+// const token =
+//   "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2IwYTQxNDQ0Nzg4M2U1ZmE4MGY4YjIiLCJ1c2VybmFtZSI6ImJiIiwiZnVsbE5hbWUiOiJIw6BvIG7DqCIsImVtYWlsIjoiaGFuZ3V5ZW5oYW9vby4yMGFwcmlsQGdtYWlsLmNvbSIsInBob25lTnVtYmVyIjoxMjMxMjMxMjMxMjMsInJvbGUiOnsiX2lkIjoxLCJuYW1lIjoiQ3VzdG9tZXIifSwiaWF0IjoxNzQyMjk4NjY3LCJleHAiOjE3NDIzODUwNjd9.HijEZKasrq0pk--NrHJOCPapZUfLbJ4iNQEUpu0hZ9FRsxnR_ttMNsKLOlExOc66VbAlBrfFfxD8GyqQSow1B9i1VbuW2avKMIDZCpQwZeggyLC-QD9cVAmjLrof5XzHwyNY-szHh3kKjTmjy3GQplMJDKh0W4xJrJVFR3waUoSnC1zLMjZZZ8aoOp7iuIRn0nj4ur19IzcSG1SiTk3z0EWipCYiPSlZFMJI7kaS0E4fe9b_C8SHR8KE0EOmZ2RtZw7U6hV-CBD2bmzkTp3cfPvG5kGi9j8UA4t80DqVA0q-hIzTgZGzhLO8jBZNWyRk6P9ENJl0Ikx9Q0fopBKXIQ";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -42,13 +43,13 @@ export default function RootLayout() {
     SpaceMono: require("@/assets/fonts/SpaceMono-Regular.ttf"),
   });
 
-  useEffect(() => {
-    const auth = {
-      token: token,
-      user: jwtDecode(token),
-    };
-    asyncStorage_initStorage("auth", auth);
-  }, []);
+  // useEffect(() => {
+  //   const auth = {
+  //     token: token,
+  //     user: jwtDecode(token),
+  //   };
+  //   asyncStorage_initStorage("auth", auth);
+  // }, []);
 
   useEffect(() => {
     if (loaded) {
@@ -61,20 +62,6 @@ export default function RootLayout() {
   }
 
   return (
-    // <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-    //   <Stack>
-    //     <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-    //     <Stack.Screen name="+not-found" />
-    //   </Stack>
-    //   <StatusBar style="auto" />
-    // </ThemeProvider>
-
-    // <PaperProvider>
-    //   <SafeAreaView style={layoutStyles.AndroidSafeArea}>
-    //     <AppBottomNavigation />
-    //   </SafeAreaView>
-    // </PaperProvider>
-
     <GestureHandlerRootView style={{ flex: 1 }}>
       {/* Bọc vào đây */}
       <PaperProvider>
@@ -91,7 +78,6 @@ const layoutStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
     fontFamily: "PostNoBillBold",
-    // paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
   },
   MainScreen: {
     marginBottom: 70,

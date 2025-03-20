@@ -11,9 +11,11 @@ import { useIsFocused } from "@react-navigation/native";
 import { styles } from "./styles";
 import BookingGroup from "./Widget/BookingGroup";
 import { callApi } from "@/app/api/main/api_call/api";
-import { publicApi } from "@/app/api/instance/axiosInstance";
+import { loginRequiredApi, publicApi } from "@/app/api/instance/axiosInstance";
 import { asyncStorage_getByKey } from "@/app/tool/AsyncStorage";
 import { ScrollView } from "react-native-gesture-handler";
+import { useNavigation } from "expo-router";
+import { loginRequiredAlert } from "@/utils/alert.util";
 
 const data = [
   {
@@ -484,7 +486,7 @@ const BookingHistoryScreen = () => {
   const [cancelledGroup, setCancelledGroup] = useState([]);
   // HOOKS
   const isFocused = useIsFocused();
-
+  const navigate = useNavigation();
   // useEffect(() => {
   //   setLoading(true);
   //   setAttributes();
@@ -501,19 +503,44 @@ const BookingHistoryScreen = () => {
     fetchData();
   }, [isFocused]);
 
-  const setAttributes = async () => {
-    // CALL API to get booking history
-    // console.log("Chạy API để get booking history");
+  // const setAttributes = async () => {
+  //   // CALL API to get booking history
+  //   // console.log("Chạy API để get booking history");
 
-    const account = await asyncStorage_getByKey("auth");
-    const user = account.user;
-    // console.log("user", user);
-    const bookingHistory = await callApi({
-      instance: publicApi,
-      method: "get",
-      url: `/bookings/accounts/${user._id}`,
-    });
-    setBookings(bookingHistory.data.bookings);
+  //   const account = await asyncStorage_getByKey("auth");
+  //   const user = account.user;
+  //   // console.log("user", user);
+  //   const bookingHistory = await callApi({
+  //     instance: loginRequiredApi,
+  //     method: "get",
+  //     url: `/bookings/accounts/${user._id}`,
+  //   });
+  //   if (bookingHistory.success) setBookings(bookingHistory.data.bookings);
+  //   else {
+  //     console.log("Error", bookingHistory.message);
+  //   }
+  // };
+  const setAttributes = async () => {
+    try {
+      const account = await asyncStorage_getByKey("auth");
+      if (!account || !account.user) {
+        console.log("❌ Không tìm thấy thông tin tài khoản, cần đăng nhập");
+        loginRequiredAlert(navigate);
+      }
+      const bookingHistory = await callApi({
+        instance: loginRequiredApi,
+        method: "get",
+        url: `/bookings/accounts/${account.user._id}`,
+      });
+
+      if (bookingHistory.success) {
+        setBookings(bookingHistory.data.bookings);
+      } else {
+        console.log("⚠️ API Error:", bookingHistory.message);
+      }
+    } catch (error) {
+      console.log("🚨 Lỗi khi gọi API:", error.message);
+    }
   };
 
   // FUNCTIONS

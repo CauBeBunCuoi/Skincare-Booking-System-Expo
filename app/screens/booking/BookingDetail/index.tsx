@@ -14,6 +14,7 @@ import TimeInformations from "./Widget/TimeInformations";
 import ResultPopup from "./Widget/ResultPopup";
 import { callApi } from "@/app/api/main/api_call/api";
 import { loginRequiredApi } from "@/app/api/instance/axiosInstance";
+import { confirmAlert } from "@/utils/alert.util";
 
 const data = {
   booking: {
@@ -140,6 +141,13 @@ const BookingDetailScreen = () => {
     }
   };
 
+  const confirmDeclined = () => {
+    confirmAlert(
+      "Sau khi xóa, bạn sẽ không thể tiếp tục buổi trị liệu!",
+      handleDeclined
+    );
+  };
+
   const handleShowResult = async () => {
     // Call API to get result from therapist
     // console.log("Chạy API để get result from therapist với id: ", bookingId);
@@ -200,7 +208,7 @@ const BookingDetailScreen = () => {
 
                 {booking.booking.bookStatusId < 5 && (
                   <TouchableOpacity
-                    onPress={handleDeclined}
+                    onPress={confirmDeclined}
                     style={styles.declinedButton}
                   >
                     <Text style={styles.declinedText}>Declined Booking</Text>
